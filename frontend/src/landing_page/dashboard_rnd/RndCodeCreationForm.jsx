@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Select from "react-select";
 
 //  helper functions
 function canonicalPayload(data) {
@@ -46,6 +47,7 @@ async function signPayload(privateKeyPem, payload) {
 
 // component
 export default function RndCodeCreationForm({ onClose }) {
+  const [piList, setPiList] = useState([]);
   const [success, setSuccess] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
 
@@ -56,7 +58,7 @@ export default function RndCodeCreationForm({ onClose }) {
     transactionId: "",
     piEmpId: "",
     piName: "",
-    privateKeyFile: null
+    privateKeyFile: null,
   });
 
   const handleChange = async (e) => {
@@ -66,13 +68,16 @@ export default function RndCodeCreationForm({ onClose }) {
       setLoadingCode(true);
 
       try {
-        const res = await fetch(`http://localhost:5000/api/project-code`,{
-         method: "POST",
-         headers: {
-         "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ department: value }),
-      });
+        const res = await fetch(
+          `http://localhost:5000/api/projects/project-code`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ department: value }),
+          },
+        );
 
         const data = await res.json();
 
@@ -94,6 +99,17 @@ export default function RndCodeCreationForm({ onClose }) {
       [name]: value,
     }));
   };
+
+  // pilist for dropdown list
+  useEffect(() => {
+    fetch("http://localhost:5000/api/projects/pi-list")
+      .then((res) => res.json())
+      .then((data) => setPiList(data));
+  }, []);
+  const options = piList.map((pi) => ({
+    value: pi.employeeId,
+    label: `${pi.employeeId}`,
+  }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -151,7 +167,6 @@ export default function RndCodeCreationForm({ onClose }) {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-
           {/* Department */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -163,7 +178,7 @@ export default function RndCodeCreationForm({ onClose }) {
               value={formData.department}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Department</option>
               <option value="CSE">CSE</option>
@@ -207,7 +222,7 @@ export default function RndCodeCreationForm({ onClose }) {
           {/* Transaction ID */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
-              Transaction ID
+              Bank Transaction ID
             </label>
 
             <input
@@ -221,18 +236,29 @@ export default function RndCodeCreationForm({ onClose }) {
           </div>
 
           {/* PI Employee ID */}
+
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               PI Employee ID
             </label>
 
-            <input
-              type="text"
-              name="piEmpId"
-              value={formData.piEmpId}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            <Select
+              className=" w-full rounded-lg text-sm font-medium text-gray-600 focus:ring-blue-500"
+              options={options}
+              value={options.find((opt) => opt.value === formData.piEmpId)}
+              onChange={(selected) => {
+                const selectedPI = piList.find(
+                  (pi) => pi.employeeId === selected.value,
+                );
+
+                setFormData({
+                  ...formData,
+                  piEmpId: selectedPI.employeeId,
+                  piName: selectedPI.fullName,
+                });
+              }}
+              placeholder="Select PI Employee ID"
+              maxMenuHeight={120}
             />
           </div>
 
@@ -248,10 +274,10 @@ export default function RndCodeCreationForm({ onClose }) {
               value={formData.piName}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100"
+              disabled
             />
           </div>
-          
 
           {/* Buttons */}
           <div className="md:col-span-2 flex justify-end gap-4 mt-4">

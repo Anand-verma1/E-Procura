@@ -17,10 +17,6 @@ const codeCreationSchema = new mongoose.Schema({
 
   signature:String,
   signedBy:String,
-  createdBy: {
-    type: String,
-    default: "RND"
-  },
   status: {
     type: String,
     default: "Sent to PI"
