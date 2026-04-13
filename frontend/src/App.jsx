@@ -14,6 +14,7 @@ import Footer from "./Footer";
 // import { AuthProvider, useAuth } from "./context/AuthContext";
 import HomePage from "./landing_page/home/HomePage";
 import GenerateKey from "./landing_page/key_gen/GenerateKey";
+import PIProjectList from "./landing_page/dashboard_pi/PIProjectList";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/dean-dashboard" element={<DashboardDean/>}/>
         <Route path="/new-project" element={<ProjectDivisionForm />} />
         <Route path="/summary" element={<ProjectSummary />} />
+        <Route path="/projects" element={<PIProjectList />} />
         <Route path ="/fund-booking/:projectId" element={<FundBookingOption/>}/>
       </Routes>
       <Footer/>

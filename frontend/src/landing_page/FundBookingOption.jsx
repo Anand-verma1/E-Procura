@@ -26,7 +26,7 @@
 //     // "Advance Settlement",
 //     // "Tenure Extension",
 //     // "Direct Purchase",
-//     // "Reimbursement",   
+//     // "Reimbursement",
 //     // "Event / Workshop Expenses",
 //   };
 //   const SelectedForm = processes[process];
@@ -90,11 +90,9 @@ export default function FundBookingOption() {
 
   // process → form mapping
   const processForms = {
-    "Purchase of Material Procurement > 1 Lakh":
-      PurchaseRequisitionForm,
+    "Purchase of Material Procurement > 1 Lakh": PurchaseRequisitionForm,
 
-    "Purchase of Material Procurement < 1 Lakh":
-      PurchaseRequisitionForm,
+    "Purchase of Material Procurement < 1 Lakh": PurchaseRequisitionForm,
   };
 
   const SelectedForm = processForms[selectedProcessFromURL];
@@ -103,7 +101,7 @@ export default function FundBookingOption() {
     if (!process) return alert("Select a process first");
 
     navigate(
-      `/fund-booking/${projectId}?process=${encodeURIComponent(process)}`
+      `/fund-booking/${projectId}?process=${encodeURIComponent(process)}`,
     );
   };
 
@@ -123,9 +121,7 @@ export default function FundBookingOption() {
   /* ---------- CASE 2: Show process selector ---------- */
   return (
     <div className="p-10">
-      <h1 className="text-3xl mb-6">
-        Which process do you want to initiate?
-      </h1>
+      <h1 className="text-3xl mb-6">Which process do you want to initiate?</h1>
 
       <select
         value={process}

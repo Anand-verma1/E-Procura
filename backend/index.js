@@ -98,7 +98,7 @@ app.post("/api/login", async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role.toUpperCase(), email:user.email },
+      { id: user._id, role: user.role.toUpperCase(), email:user.email,employeeId:user.employeeId},
       "SECRET_KEY",
       { expiresIn: "1d" }
     );
@@ -448,9 +448,9 @@ app.post("/purchase/submit", async (req, res) => {
   }
 });
 
-app.use("/api", projectRoutes); // Generate code (POST Request)
-app.use("/api/projects",projectRoutes); // Create Projects (POST Request)
-app.use("/api/projects/pi-projects",projectRoutes); // Read Projects (GET Request)
+
+app.use("/api/projects",projectRoutes); 
+
 
 
 // SERVER RUN
