@@ -17,7 +17,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/project/pi", {
+      const res = await fetch("http://localhost:5000/api/projects/bifurcated", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,6 +28,8 @@ useEffect(() => {
       }
 
       const data = await res.json();
+      console.log("bifurcation checking",data);
+      
       setProjects(data);
     } catch (err) {
       console.error(err);
@@ -43,7 +45,7 @@ useEffect(() => {
     if (!searchCode) return;
 
     const project = projects.find(
-      (p) => p.projectId === searchCode
+      (p) => p.projectCode === searchCode
     );
 
     if (!project) {
@@ -54,22 +56,6 @@ useEffect(() => {
     }
   };
 
-  // 🏷 Status badge color
-  const statusColor = (status) => {
-    switch (status) {
-      case "pending_rnd":
-        return "text-yellow-400";
-      case "pending_dean":
-        return "text-blue-400";
-      case "approved":
-        return "text-green-400";
-      case "rejected_by_rnd":
-      case "rejected_by_dean":
-        return "text-red-400";
-      default:
-        return "text-gray-300";
-    }
-  };
 
   return (
     <div className="dashboard-bg fade-in text-[#eff6e0] p-10">
@@ -78,12 +64,12 @@ useEffect(() => {
         <h1 className="text-4xl font-bold tracking-wide">
           PI Dashboard
         </h1>
-        <button class="btn-primary">Bifercated Projects (after clicking fundbooking of 3 types)</button>
+        <button className="btn-primary">Bifurcated Projects (after clicking fundbooking of 3 types)</button>
         <button
           className="btn-primary"
           onClick={() => navigate("/projects")}
         >
-          + Fund Bifercation
+          + Fund Bifurcation
         </button>
       </div>
 
@@ -115,8 +101,8 @@ useEffect(() => {
             </h3>
 
             <p className="text-sm opacity-80 mb-4">
-              {searchedProject.projectId} ·{" "}
-              <span className={statusColor(searchedProject.status)}>
+              {searchedProject.projectCode} ·{" "}
+              <span>
                 {searchedProject.status}
               </span>
             </p>
@@ -131,7 +117,7 @@ useEffect(() => {
                 View Summary
               </button>
 
-              {searchedProject.status === "approved" && (
+              {/* {searchedProject.status === "approved" && ( */}
                 <button
                   onClick={() =>
                     navigate(`/fund-booking/${searchedProject._id}`)
@@ -140,7 +126,7 @@ useEffect(() => {
                 >
                   Fund Booking
                 </button>
-              )}
+               {/* )} */}
             </div>
           </div>
         )}
@@ -148,7 +134,7 @@ useEffect(() => {
 
       {/* PROJECT LIST */}
       <h2 className="text-2xl font-semibold mb-6">
-        My Projects
+        Bifurcated Projects for Fund Booking
       </h2>
 
       {projects.length === 0 ? (
@@ -162,8 +148,8 @@ useEffect(() => {
               </h3>
 
               <p className="text-sm opacity-70 mb-4">
-                {proj.projectId} ·{" "}
-                <span className={statusColor(proj.status)}>
+                {proj.projectCode} ·{" "}
+                <span >
                   {proj.status}
                 </span>
               </p>
@@ -171,14 +157,14 @@ useEffect(() => {
               <div className="flex gap-3">
                 <button
                   onClick={() =>
-                    navigate(`/summary?project=${proj._id}`)
+                    navigate(`/summary/${proj._id}`)
                   }
                   className="border border-[#aec3b0] px-4 py-2 rounded-lg hover:bg-[#aec3b0] hover:text-black transition"
                 >
                   View Summary
                 </button>
 
-                {proj.status === "approved" && (
+                {/* {proj.status === "approved" && ( */}
                   <button
                     onClick={() =>
                     navigate(`/fund-booking/${proj._id}`)
@@ -187,7 +173,7 @@ useEffect(() => {
                   >
                     Fund Booking
                   </button>
-                )}
+                {/* )} */}
               </div>
             </div>
           ))}

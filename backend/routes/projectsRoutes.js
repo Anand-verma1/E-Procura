@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
 import { auth } from "../middleware/auth.js";
-import { generateProjectCode, createProject,getProjects, getPIList  } from "./controllers/projectRoutesController.js";
+import { upload } from "../middleware/upload.js";
+import { generateProjectCode, createProject,getPIList,getProjects,getBifurcatedProjects, getProjectsById, updateProjectByPI  } from "./controllers/projectRoutesController.js";
 
 // Generate Empld - PI List for rnd form
 router.get("/pi-list",getPIList);
@@ -12,45 +13,17 @@ router.post("/project-code", generateProjectCode );
 // PROJECT CODE FORM CREATED BY RND
 router.post("/", createProject);
 
-// PI: GET PROJECTS 
+// PI: GET ALL PROJECTS - Non-bifurcated
 router.get("/", auth(["PI"]), getProjects);
+// PI: GET ALL PROJECTS - Bifurcated
+router.get("/bifurcated", auth(["PI"]), getBifurcatedProjects);
 
-// // ================== GET ALL PROJECTS ==================
-// router.get("/", async (req, res) => {
-//   try {
-//     const projects = await Project.find().sort({ submittedAt: -1 });
-//     res.json(projects);
-//   } catch (err) {
-//     res.status(500).json({ message: "Error fetching projects" });
-//   }
-// });
+// PI: GET SINGLE PROJECT BY ID
+router.get("/:id", getProjectsById);
 
 
-// // ================== GET SINGLE PROJECT ==================
-// router.get("/:id", async (req, res) => {
-//   try {
-//     const project = await Project.findById(req.params.id);
-//     res.json(project);
-//   } catch (err) {
-//     res.status(500).json({ message: "Error fetching project" });
-//   }
-// });
-
-
-// // ================== UPDATE PROJECT (PI) ==================
-// router.put("/:id", async (req, res) => {
-//   try {
-//     const updated = await Project.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true }
-//     );
-
-//     res.json(updated);
-//   } catch (err) {
-//     res.status(500).json({ message: "Error updating project" });
-//   }
-// });
+// UPDATE PROJECT FORM (PI) 
+router.patch("/:id", auth(["PI"]), upload.single("attachment"),updateProjectByPI);
 
 
 // // ================== SIGN PROJECT (PI) ==================

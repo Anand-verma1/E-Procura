@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
 async function readPem(file) {
@@ -46,58 +46,80 @@ async function hashPdf(file) {
     .join("");
 }
  
-// for sorting top-level keys in payload
+// for sorting all keys in payload
 function canonicalPayload(obj) {
-  const ordered = {};
-  Object.keys(obj).sort().forEach(k => {
-    ordered[k] = obj[k];
+  if (obj === null || typeof obj !== "object") return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map(canonicalPayload);
+  }
+
+  const sortedKeys = Object.keys(obj).sort();
+  const result = {};
+
+  sortedKeys.forEach(key => {
+    result[key] = canonicalPayload(obj[key]);
   });
-  return ordered;
+
+  return result;
 }
 
 
-export default function ProjectDivisionForm({project}) {
+export default function ProjectBifurcationForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    projectId: "",
     title: "",
-    department: "",
-    piName: "",
-    totalFundReceived: "",
-    availableFund: "",
-    bifurcationYear: "",
     divisionHeads: {
       "Manpower (including Interns)": "",
       Equipment: "",
       "Consumables/Contingency/Travel": "",
       "Bootcamps/Events": "",
       Overhead: "",
-      
     },
     attachment: null,
     privateKeyFile: null,
   });
 // Populate auto-fields from selected project
-  useEffect(() => {
-    if (project) {
-      setFormData(prev => ({
-        ...prev,
-        projectId: project.projectId,
-        title: project.title || "",
-        department: project.department,
-        piName: project.piName || "",
-        totalFundReceived: project.totalFundReceived || "",
-        availableFund: project.availableFund || "",
-        bifurcationYear: project.bifurcationYear || "",
-      }));
-    }
-  }, [project]);
+const { id } = useParams();
+
+useEffect(() => {
+  fetchProject();
+}, []);
+
+const fetchProject = async () => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const data = await res.json();
+    console.log("rndData",data);
+    
+
+    setFormData(prev => ({
+      ...prev,
+      projectCode: data.projectCode,
+      department: data.department,
+      piName: data.piName,
+      piEmpId:data.piEmpId,
+      status:data.status,
+      bankTransactionId:data.bankTransactionId,
+      totalFundReceived: data.totalFundReceived || "",
+      bifurcationYear: data.year || "",
+    }));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
   function handleChange(e) {
     const { name, value } = e.target;
     if (formData.divisionHeads.hasOwnProperty(name)) {
       setFormData({
         ...formData,
-        divisionHeads: { ...formData.divisionHeads, [name]: value },
+        divisionHeads: { ...formData.divisionHeads, [name]: Number(value) },
       });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -119,17 +141,16 @@ export default function ProjectDivisionForm({project}) {
     alert("Upload private key");
     return;
   }
+  if (!formData.attachment) {
+  alert("Upload PDF");
+  return;
+}
 
   const pdfHash = await hashPdf(formData.attachment)
   console.log("pdfHash", pdfHash);
   
   const payload = canonicalPayload( {
-    projectId: formData.projectId,
     title: formData.title,
-    department: formData.department,
-    piName: formData.piName,
-    totalFundReceived: formData.totalFundReceived,
-    bifurcationYear: formData.bifurcationYear,
     divisionHeads: formData.divisionHeads,
     pdfHash: pdfHash,
     role: "PI",
@@ -148,8 +169,8 @@ export default function ProjectDivisionForm({project}) {
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch("http://localhost:5000/project/submit", {
-    method: "POST",
+  const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+    method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -168,15 +189,15 @@ export default function ProjectDivisionForm({project}) {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-100 to-gray-50">
       <div className="glass-card w-full max-w-4xl p-8 shadow-lg fade-in">
         <h2 className="text-3xl font-bold text-primary text-center mb-6">
-          Project Registration Form
+          Project Bifurcation Form
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Project info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label>Project ID</label>
-              <input type="text" name="projectId" value={formData.projectId} onChange={handleChange} required className="w-full p-3 border rounded" disabled/>
+              <label>Project Code</label>
+              <input type="text" name="projectCode" value={formData.projectCode} onChange={handleChange} required className="w-full p-3 border rounded" disabled/>
             </div>
             <div>
               <label>Project Title</label>
@@ -194,15 +215,28 @@ export default function ProjectDivisionForm({project}) {
               <input disabled type="text" name="department" value={formData.department} readOnly className="w-full p-3 border bg-gray-100 rounded" />
             </div>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label>Bank Transaction ID</label>
+              <input disabled type="text" name="bankTransactionId" value={formData.bankTransactionId} onChange={handleChange} required className="w-full p-3 border rounded" />
+            </div>
+            
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label>PI Employee ID</label>
+              <input disabled type="text" name="piName" value={formData.piEmpId} onChange={handleChange} required className="w-full p-3 border rounded" />
+            </div>
+            <div>
+              <label>Project Status</label>
+              <input disabled type="text" name="department" value={formData.status} readOnly className="w-full p-3 border bg-gray-100 rounded" />
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label>Total Fund Received (₹)</label>
               <input disabled type="number" name="totalFundReceived" value={formData.totalFundReceived} onChange={handleChange} required className="w-full p-3 border rounded" />
-            </div>
-            <div>
-              <label>Available Fund (₹)</label>
-              <input disabled type="number" name="availableFund" value={formData.availableFund} onChange={handleChange} required className="w-full p-3 border rounded" />
             </div>
             <div>
               <label>Funding Year</label>
