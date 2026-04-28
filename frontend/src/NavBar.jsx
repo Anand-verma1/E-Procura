@@ -1,76 +1,70 @@
-// import { Link } from "react-router-dom";
-// import { useAuth } from "./context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
 function NavBar() {
-  return(
-    <><h1>nav</h1></>
-  )
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const name = localStorage.getItem("name");
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/", { replace: true });
+  };
+
+  return (
+    <nav className="bg-[var(--primaryAccent)] text-white px-6 py-3 shadow-md">
+      <div className="flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="text-xl font-bold">
+          E-Procura
+        </Link>
+
+        {/* Right Side */}
+        <div className="flex items-center gap-6">
+          {token ? (
+            <>
+              {/* Role-based Dashboard */}
+              {role === "PI" && (
+                <Link to="/pi-dashboard" className="hover:underline">
+                  PI Dashboard
+                </Link>
+              )}
+
+              {role === "RND" && (
+                <Link to="/rnd-dashboard" className="hover:underline">
+                  R&D Dashboard
+                </Link>
+              )}
+
+              {role === "DEAN" && (
+                <Link to="/dean-dashboard" className="hover:underline">
+                  Dean Dashboard
+                </Link>
+              )}
+
+              {/* User Info */}
+              <span className="text-sm bg-white/20 px-3 py-1 rounded-lg">
+                {name} ({role})
+              </span>
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg text-sm"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/" className="hover:underline">
+              SignUp/Login
+            </Link>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 }
-//   const { user, logout } = useAuth();
-
-//   return (
-//     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-//       <div className="container">
-//         <Link className="navbar-brand fw-bold text-white" to="/">
-//           Procure Management System
-//         </Link>
-
-//         <div className="collapse navbar-collapse">
-//           <ul className="navbar-nav ms-auto">
-//             {user ? (
-//               <>
-//                 {user.role === "PI" && (
-//                   <>
-//                     <li className="nav-item">
-//                       <Link className="nav-link text-white" to="/dashboard">
-//                         Dashboard
-//                       </Link>
-//                     </li>
-//                     <li className="nav-item">
-//                       <Link className="nav-link text-white" to="/division/sampleProject">
-//                         New Project
-//                       </Link>
-//                     </li>
-//                   </>
-//                 )}
-
-//                 {user.role === "RND" && (
-//                   <li className="nav-item">
-//                     <Link className="nav-link text-white" to="/dashboard">
-//                       R&D Dashboard
-//                     </Link>
-//                   </li>
-//                 )}
-
-//                 {user.role === "DEAN" && (
-//                   <li className="nav-item">
-//                     <Link className="nav-link text-white" to="/dashboard">
-//                       Dean Dashboard
-//                     </Link>
-//                   </li>
-//                 )}
-
-//                 <li className="nav-item">
-//                   <button
-//                     className="nav-link text-white"
-//                     onClick={logout}
-//                   >
-//                     Logout
-//                   </button>
-//                 </li>
-//               </>
-//             ) : (
-//               <li className="nav-item">
-//                 <Link className="nav-link text-white" to="/">
-//                   Login
-//                 </Link>
-//               </li>
-//             )}
-//           </ul>
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// }
 
 export default NavBar;

@@ -60,9 +60,16 @@ export default function RndCodeCreationForm({ onClose }) {
     piName: "",
     privateKeyFile: null,
   });
+  const [errors, setErrors] = useState({});
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
+
+    // clear field error
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
 
     if (name === "department") {
       setLoadingCode(true);
@@ -111,8 +118,39 @@ export default function RndCodeCreationForm({ onClose }) {
     label: `${pi.employeeId}`,
   }));
 
+  const validate = () => {
+    let newErrors = {};
+
+    if (!formData.department) {
+      newErrors.department = "Department is required";
+    }
+
+    if (!formData.availableFunds) {
+      newErrors.availableFunds = "Available funds is required";
+    } else if (Number(formData.availableFunds) <= 0) {
+      newErrors.availableFunds = "Amount must be greater than 0";
+    }
+
+    if (!formData.transactionId) {
+      newErrors.transactionId = "Transaction ID is required";
+    }
+
+    if (!formData.piEmpId) {
+      newErrors.piEmpId = "Please select a PI";
+    }
+
+    if (!formData.privateKeyFile) {
+      newErrors.privateKeyFile = "Private key is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     if (!formData.privateKeyFile) {
       alert("Upload private key");
@@ -177,7 +215,6 @@ export default function RndCodeCreationForm({ onClose }) {
               name="department"
               value={formData.department}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Department</option>
@@ -187,6 +224,9 @@ export default function RndCodeCreationForm({ onClose }) {
               <option value="MECHANICAL">MECHANICAL</option>
               <option value="CIVIL">CIVIL</option>
             </select>
+            {errors.department && (
+              <p className="text-red-500 text-sm">{errors.department}</p>
+            )}
           </div>
 
           {/* Project Code */}
@@ -214,9 +254,11 @@ export default function RndCodeCreationForm({ onClose }) {
               name="availableFunds"
               value={formData.availableFunds}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
+            {errors.availableFunds && (
+              <p className="text-red-500 text-sm">{errors.availableFunds}</p>
+            )}
           </div>
 
           {/* Transaction ID */}
@@ -230,9 +272,11 @@ export default function RndCodeCreationForm({ onClose }) {
               name="transactionId"
               value={formData.transactionId}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
+            {errors.transactionId && (
+              <p className="text-red-500 text-sm">{errors.transactionId}</p>
+            )}
           </div>
 
           {/* PI Employee ID */}
@@ -251,15 +295,24 @@ export default function RndCodeCreationForm({ onClose }) {
                   (pi) => pi.employeeId === selected.value,
                 );
 
-                setFormData({
-                  ...formData,
+                setFormData((prev) => ({
+                  ...prev,
                   piEmpId: selectedPI.employeeId,
                   piName: selectedPI.fullName,
-                });
+                }));
+
+                //clear error
+                setErrors((prev) => ({
+                  ...prev,
+                  piEmpId: "",
+                }));
               }}
               placeholder="Select PI Employee ID"
               maxMenuHeight={120}
             />
+            {errors.piEmpId && (
+              <p className="text-red-500 text-sm">{errors.piEmpId}</p>
+            )}
           </div>
 
           {/* PI Name */}
@@ -273,7 +326,6 @@ export default function RndCodeCreationForm({ onClose }) {
               name="piName"
               value={formData.piName}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100"
               disabled
             />
@@ -290,15 +342,22 @@ export default function RndCodeCreationForm({ onClose }) {
                 type="file"
                 name="privateKeyFile"
                 accept=".pem"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
                     privateKeyFile: e.target.files[0],
-                  })
-                }
-                required
+                  }));
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    privateKeyFile: "",
+                  }));
+                }}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
               />
+              {errors.privateKeyFile && (
+                <p className="text-red-500 text-sm">{errors.privateKeyFile}</p>
+              )}
             </div>
             <button
               type="submit"
