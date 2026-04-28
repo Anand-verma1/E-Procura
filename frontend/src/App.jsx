@@ -12,7 +12,6 @@ import Footer from "./Footer";
 import HomePage from "./landing_page/home/HomePage";
 import GenerateKey from "./landing_page/key_gen/GenerateKey";
 
-import PIProjectList from "./landing_page/dashboard_pi/PIProjectList";
 import FundBifurcationList from "./landing_page/dashboard_pi/FundBifurcationList";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -65,7 +64,6 @@ function App() {
         <Route path="/projects/:id" element={<ProjectBifurcationForm />} />
         <Route path="/summary/:id" element={<ProjectSummary />} />
         <Route path="/projects" element={<FundBifurcationList />} />
-        <Route path="/projects-list" element={<PIProjectList />} />
 
         <Route
           path="/fund-booking/:projectId"
