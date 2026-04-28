@@ -73,6 +73,7 @@
 //     </div>
 //   );
 // }
+
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PurchaseRequisitionForm from "./process_forms/PurchaseRequisitionForm";
@@ -88,14 +89,31 @@ export default function FundBookingOption() {
   // dropdown selection state
   const [process, setProcess] = useState("");
 
-  // process → form mapping
+  // process → form mapping (KEEP full team list)
   const processForms = {
     "Purchase of Material Procurement > 1 Lakh": PurchaseRequisitionForm,
-
     "Purchase of Material Procurement < 1 Lakh": PurchaseRequisitionForm,
+    "Project Staff recruitment": null,
+    "Chair Person": null,
+    "No Dues process": null,
+    "Event Budget Approval": null,
+    "Participants Accommodation Approval": null,
+    "Internship Approval": null,
+    "TA/DA Approval": null,
+    "Travel Booking/Cab Requisition": null,
+    "NOC issue/Attendance": null,
+    "Leave Approval": null,
+    "Advance taking": null,
+    "Advance Settlement": null,
+    "Tenure Extension": null,
+    "Direct Purchase": null,
+    Reimbursement: null,
+    "Event / Workshop Expenses": null,
   };
 
-  const SelectedForm = processForms[selectedProcessFromURL];
+  const SelectedForm = selectedProcessFromURL
+    ? processForms[selectedProcessFromURL]
+    : null;
 
   const handleContinue = () => {
     if (!process) return alert("Select a process first");
@@ -105,7 +123,19 @@ export default function FundBookingOption() {
     );
   };
 
-  /* ---------- CASE 1: Show form ---------- */
+  // ❗ Case: process exists but no form yet
+  if (selectedProcessFromURL && !SelectedForm) {
+    return (
+      <div className="p-10">
+        <h1 className="text-xl font-semibold">{selectedProcessFromURL}</h1>
+        <p className="mt-4 text-gray-600">
+          This process form is not available yet.
+        </p>
+      </div>
+    );
+  }
+
+  // ✅ CASE 1: Show form
   if (SelectedForm) {
     return (
       <div className="p-8">
@@ -118,7 +148,7 @@ export default function FundBookingOption() {
     );
   }
 
-  /* ---------- CASE 2: Show process selector ---------- */
+  // ✅ CASE 2: Show process selector
   return (
     <div className="p-10">
       <h1 className="text-3xl mb-6">Which process do you want to initiate?</h1>

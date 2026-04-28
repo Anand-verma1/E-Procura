@@ -7,21 +7,21 @@ export default function DashboardPI() {
   const [projects, setProjects] = useState([]);
   const [searchCode, setSearchCode] = useState("");
   const [searchedProject, setSearchedProject] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-
-  // 🔹 Fetch PI projects
+  // 🔹 Fetch PI projects (latest team API)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:5000/project/pi", {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          "http://localhost:5000/api/projects/bifurcated",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch projects");
@@ -30,18 +30,20 @@ export default function DashboardPI() {
         const data = await res.json();
         setProjects(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching projects:", err);
       }
     };
 
     fetchProjects();
   }, []);
 
-  // 🔍 Search by project code (client side)
+  // 🔍 Search by project code
   const handleSearch = () => {
-    if (!searchCode) return;
+    if (!searchCode.trim()) return;
 
-    const project = projects.find((p) => p.projectId === searchCode);
+    const project = projects.find(
+      (p) => p.projectCode?.toLowerCase() === searchCode.toLowerCase(),
+    );
 
     if (!project) {
       alert("Project not found");
@@ -51,33 +53,16 @@ export default function DashboardPI() {
     }
   };
 
-  // 🏷 Status badge color
-  const statusColor = (status) => {
-    switch (status) {
-      case "pending_rnd":
-        return "text-yellow-400";
-      case "pending_dean":
-        return "text-blue-400";
-      case "approved":
-        return "text-green-400";
-      case "rejected_by_rnd":
-      case "rejected_by_dean":
-        return "text-red-400";
-      default:
-        return "text-gray-300";
-    }
-  };
-
   return (
     <div className="dashboard-bg fade-in text-[#eff6e0] p-10">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-10">
         <h1 className="text-4xl font-bold tracking-wide">PI Dashboard</h1>
-        <button className="btn-primary">
-          Bifercated Projects (after clicking fundbooking of 3 types)
-        </button>
+
+        <button className="btn-primary">Bifurcated Projects</button>
+
         <button className="btn-primary" onClick={() => navigate("/projects")}>
-          + Fund Bifercation
+          + Fund Bifurcation
         </button>
       </div>
 
@@ -105,39 +90,33 @@ export default function DashboardPI() {
             <h3 className="text-lg font-semibold">{searchedProject.title}</h3>
 
             <p className="text-sm opacity-80 mb-4">
-              {searchedProject.projectId} ·{" "}
-              <span className={statusColor(searchedProject.status)}>
-                {searchedProject.status}
-              </span>
+              {searchedProject.projectCode} ·{" "}
+              <span>{searchedProject.status}</span>
             </p>
 
             <div className="flex gap-3">
               <button
-                onClick={() =>
-                  navigate(`/summary?project=${searchedProject._id}`)
-                }
+                onClick={() => navigate(`/summary/${searchedProject._id}`)}
                 className="border border-[#aec3b0] px-4 py-2 rounded-lg hover:bg-[#aec3b0] hover:text-black transition"
               >
                 View Summary
               </button>
 
-              {searchedProject.status === "approved" && (
-                <button
-                  onClick={() =>
-                    navigate(`/fund-booking/${searchedProject._id}`)
-                  }
-                  className="btn-primary"
-                >
-                  Fund Booking
-                </button>
-              )}
+              <button
+                onClick={() => navigate(`/fund-booking/${searchedProject._id}`)}
+                className="btn-primary"
+              >
+                Fund Booking
+              </button>
             </div>
           </div>
         )}
       </div>
 
       {/* PROJECT LIST */}
-      <h2 className="text-2xl font-semibold mb-6">My Projects</h2>
+      <h2 className="text-2xl font-semibold mb-6">
+        Bifurcated Projects for Fund Booking
+      </h2>
 
       {projects.length === 0 ? (
         <p className="opacity-70">No projects available</p>
@@ -148,26 +127,23 @@ export default function DashboardPI() {
               <h3 className="text-lg font-semibold">{proj.title}</h3>
 
               <p className="text-sm opacity-70 mb-4">
-                {proj.projectId} ·{" "}
-                <span className={statusColor(proj.status)}>{proj.status}</span>
+                {proj.projectCode} · <span>{proj.status}</span>
               </p>
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => navigate(`/summary?project=${proj._id}`)}
+                  onClick={() => navigate(`/summary/${proj._id}`)}
                   className="border border-[#aec3b0] px-4 py-2 rounded-lg hover:bg-[#aec3b0] hover:text-black transition"
                 >
                   View Summary
                 </button>
 
-                {proj.status === "approved" && (
-                  <button
-                    onClick={() => navigate(`/fund-booking/${proj._id}`)}
-                    className="btn-primary"
-                  >
-                    Fund Booking
-                  </button>
-                )}
+                <button
+                  onClick={() => navigate(`/fund-booking/${proj._id}`)}
+                  className="btn-primary"
+                >
+                  Fund Booking
+                </button>
               </div>
             </div>
           ))}

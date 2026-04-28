@@ -6,8 +6,8 @@ function canonicalPayload(data) {
   return JSON.stringify({
     projectCode: data.projectCode,
     department: data.department,
-    availableFunds: data.availableFunds,
-    transactionId: data.transactionId,
+    totalFundReceived: data.totalFundReceived,
+    bankTransactionId: data.bankTransactionId,
     piEmpId: data.piEmpId,
     piName: data.piName,
   });
@@ -54,10 +54,12 @@ export default function RndCodeCreationForm({ onClose }) {
   const [formData, setFormData] = useState({
     projectCode: "",
     department: "",
-    availableFunds: "",
-    transactionId: "",
+    totalFundReceived: "",
+    bankTransactionId: "",
     piEmpId: "",
     piName: "",
+    sequenceNumber: "",
+    year: "",
     privateKeyFile: null,
   });
   const [errors, setErrors] = useState({});
@@ -76,7 +78,7 @@ export default function RndCodeCreationForm({ onClose }) {
 
       try {
         const res = await fetch(
-          `http://localhost:5000/api/projects/project-code`,
+          "http://localhost:5000/api/projects/project-code",
           {
             method: "POST",
             headers: {
@@ -86,21 +88,31 @@ export default function RndCodeCreationForm({ onClose }) {
           },
         );
 
+        if (!res.ok) throw new Error("Failed");
+
         const data = await res.json();
 
         setFormData((prev) => ({
           ...prev,
           department: value,
           projectCode: data.projectCode,
+          sequenceNumber: data.sequenceNumber,
+          year: data.year,
         }));
       } catch (err) {
         console.error(err);
+        alert("Error generating project code");
+
+        setFormData((prev) => ({
+          ...prev,
+          projectCode: "",
+        }));
+      } finally {
+        setLoadingCode(false);
       }
 
-      setLoadingCode(false);
       return;
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -243,16 +255,16 @@ export default function RndCodeCreationForm({ onClose }) {
             />
           </div>
 
-          {/* Available Funds */}
+          {/* Total Fund Received  */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
-              Available Funds
+              Total Fund Received
             </label>
 
             <input
               type="number"
-              name="availableFunds"
-              value={formData.availableFunds}
+              name="totalFundReceived"
+              value={formData.totalFundReceived}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
@@ -269,8 +281,8 @@ export default function RndCodeCreationForm({ onClose }) {
 
             <input
               type="text"
-              name="transactionId"
-              value={formData.transactionId}
+              name="bankTransactionId"
+              value={formData.bankTransactionId}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
@@ -287,7 +299,7 @@ export default function RndCodeCreationForm({ onClose }) {
             </label>
 
             <Select
-              className=" w-full rounded-lg text-sm font-medium text-gray-600 focus:ring-blue-500"
+              className="w-full rounded-lg text-sm font-medium text-gray-600 focus:ring-blue-500"
               options={options}
               value={options.find((opt) => opt.value === formData.piEmpId)}
               onChange={(selected) => {
@@ -301,7 +313,7 @@ export default function RndCodeCreationForm({ onClose }) {
                   piName: selectedPI.fullName,
                 }));
 
-                //clear error
+                // clear error (important UX improvement)
                 setErrors((prev) => ({
                   ...prev,
                   piEmpId: "",
@@ -310,6 +322,7 @@ export default function RndCodeCreationForm({ onClose }) {
               placeholder="Select PI Employee ID"
               maxMenuHeight={120}
             />
+
             {errors.piEmpId && (
               <p className="text-red-500 text-sm">{errors.piEmpId}</p>
             )}
@@ -361,6 +374,7 @@ export default function RndCodeCreationForm({ onClose }) {
             </div>
             <button
               type="submit"
+              disabled={!formData.projectCode || loadingCode}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow-md"
             >
               Sign & Send to PI

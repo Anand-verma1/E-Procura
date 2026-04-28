@@ -1,10 +1,9 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function ProjectSummary() {
-  const [params] = useSearchParams();
-  const projectId = params.get("project");
 
+  const { id } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +14,7 @@ export default function ProjectSummary() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:5000/project/${projectId}`, {
+        const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -27,6 +26,8 @@ export default function ProjectSummary() {
         }
 
         const data = await res.json();
+        console.log("data",data);
+        
         setProject(data);
       } catch (err) {
         console.error(err);
@@ -35,78 +36,13 @@ export default function ProjectSummary() {
       }
     };
 
-    if (projectId) fetchProject();
-  }, [projectId]);
+    if (id) fetchProject();
+  }, [id]);
 
   if (loading) return <p className="p-10 text-gray-700">Loading...</p>;
   if (!project) return <p className="p-10 text-gray-700">No project found</p>;
 
-  const handleDecision = async (action) => {
-  if (!window.confirm(`Confirm ${action}?`)) return;
 
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".pem";
-  input.click();
-
-  input.onchange = async () => {
-    const privateKeyPem = await input.files[0].text();
-
-    const signData = {
-      projectId,
-      action,
-      role: user.role,
-    };
-
-    const b64 = privateKeyPem
-      .replace("-----BEGIN PRIVATE KEY-----", "")
-      .replace("-----END PRIVATE KEY-----", "")
-      .replace(/\s/g, "");
-
-    const binary = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-
-    const cryptoKey = await crypto.subtle.importKey(
-      "pkcs8",
-      binary.buffer,
-      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-      false,
-      ["sign"]
-    );
-
-    const signatureBuffer = await crypto.subtle.sign(
-      { name: "RSASSA-PKCS1-v1_5" },
-      cryptoKey,
-      new TextEncoder().encode(JSON.stringify(signData))
-    );
-
-    const signature = btoa(
-      String.fromCharCode(...new Uint8Array(signatureBuffer))
-    );
-
-    const token = localStorage.getItem("token");
-
-    const endpoint =
-      user.role === "RND"
-        ? `/project/rnd-action/${projectId}`
-        : `/project/dean-action/${projectId}`;
-
-    const res = await fetch(`http://localhost:5000${endpoint}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ action, signature }),
-    });
-
-    if (res.ok) {
-      alert("Decision submitted");
-      window.location.reload();
-    } else {
-      alert("Decision failed");
-    }
-  };
-};
 // Open File with Tamper Detection
 const openFile = async () => {
   try{
@@ -136,9 +72,9 @@ const openFile = async () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800">Project Summary</h1>
 
-        <span className="px-4 py-2 rounded-full text-sm font-semibold bg-gray-200 text-gray-700">
+        {/* <span className="px-4 py-2 rounded-full text-sm font-semibold bg-gray-200 text-gray-700">
           {project.status?.replace("_", " ").toUpperCase()}
-        </span>
+        </span> */}
       </div>
 
       {/* BASIC INFO */}
@@ -149,11 +85,15 @@ const openFile = async () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
           <p>
-            <span className="font-semibold">Title:</span> {project.title}
+            <span className="font-semibold">Title:</span> {project.piSubmissions?.title}
           </p>
           <p>
             <span className="font-semibold">Project Code:</span>{" "}
-            {project.projectId}
+            {project.projectCode}
+          </p>
+          <p>
+            <span className="font-semibold">Bank Transaction ID:</span>{" "}
+            {project.bankTransactionId}
           </p>
           <p>
             <span className="font-semibold">Department:</span>{" "}
@@ -167,11 +107,11 @@ const openFile = async () => {
             {project.totalFundReceived}
           </p>
           <p>
-            <span className="font-semibold">Available Fund:</span> ₹{project.availableFund}
+            <span className="font-semibold">Available Fund:</span> ₹{project.availableFunds}
           </p>
           <p>
             <span className="font-semibold">Bifurcation Year:</span>{" "}
-            {project.bifurcationYear}
+            {project.year}
           </p>
         </div>
       </div>
@@ -183,7 +123,7 @@ const openFile = async () => {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {Object.entries(project.divisionHeads || {}).map(([key, value]) => (
+          {Object.entries(project.piSubmissions?.divisionHeads || {}).map(([key, value]) => (
             <div
               key={key}
               className="border rounded-xl p-4 bg-gray-50 hover:shadow transition"
@@ -229,40 +169,46 @@ const openFile = async () => {
     </div>
   </div>
 
-
-        {/* APPROVAL PANEL */}
-{((user?.role === "RND" && project.status === "pending_rnd") ||
-  (user?.role === "DEAN" && project.status === "pending_dean")) && (
-
-  <div className="mt-10 bg-yellow-50 border border-yellow-300 rounded-xl p-6">
-    <h2 className="text-xl font-semibold mb-4">
-      Approval Decision
-    </h2>
-
-    <div className="flex gap-4">
-      <button
-        onClick={() => handleDecision("approve")}
-        className="bg-green-600 text-white px-6 py-2 rounded"
-      >
-        Approve
-      </button>
-
-      <button
-        onClick={() => handleDecision("reject")}
-        className="bg-red-600 text-white px-6 py-2 rounded"
-      >
-        Reject
-      </button>
-    </div>
-  </div>
-)}
-
       </div>
 
       {/* FOOTER */}
-      <div className="text-sm text-gray-500">
-        Submitted by: <span className="font-medium">{project.submittedBy}</span>
-      </div>
+
+      <div className="flex items-center bg-green-50 border border-green-300 mt-6 rounded-lg shadow-sm">
+<img 
+    src="../../assets/signed-badge.jpg" 
+    alt="Signed Badge"
+    className="h-20 object-contain"
+  />
+    {/* Text */}
+    <div className="text-sm">
+      <p className="font-semibold text-green-700">
+        Signed by : <span className="font-medium">{project.signedBy}</span>
+      </p>
+      <p className="text-green-600 text-xs">
+        Verified Signature
+      </p>
     </div>
+  </div>
+
+  <div className="flex items-center bg-green-50 border border-green-300 mt-6 rounded-lg shadow-sm">
+  {/* Image Badge */}
+  <img 
+    src="../../assets/signed-badge.jpg" 
+    alt="Signed Badge"
+    className="h-20 object-contain"
+  />
+
+  {/* Text */}
+  <div className="text-sm">
+    <p className="font-semibold text-green-700">
+       Submitted by: <span className="font-medium">{project.piName}</span>
+    </p>
+    <p className="text-green-600 text-xs">
+      Verified Signature
+    </p>
+  </div>
+</div>
+    </div>
+    
   );
 }
