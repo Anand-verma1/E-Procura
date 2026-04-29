@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -15,49 +16,82 @@ export default function SignupPage() {
   });
 
   const [error, setError] = useState("");
-  
-    // Dynamic required validation
+  const [errors, setErrors] = useState({});
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Dynamic required validation
   const validate = () => {
-  let temp = {};
+    let newErrors = {};
 
-  if (!form.fullName) temp.fullName = "Full Name is required";
-  if (!form.email) temp.email = "Email is required";
-  if (!form.employeeId) temp.employeeId = "Employee ID is required";
-  if (!form.department) temp.department = "Please select a department";
-  if (!form.role) temp.role = "Please select a role";
-  if (!form.password) temp.password = "Password is required";
-  if (!form.confirmPassword) temp.confirmPassword = "Confirm your password";
+    if (!form.fullName) newErrors.fullName = "Full Name is required";
 
-  if (
-    form.password &&
-    form.confirmPassword &&
-    form.password !== form.confirmPassword
-  ) {
-    temp.confirmPassword = "Passwords do not match";
-  }
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    } else if (!form.email.endsWith("@iitbhilai.ac.in")) {
+      newErrors.email = "Email must end with @iitbhilai.ac.in";
+    }
 
-  setError(Object.values(temp)[0] || ""); // show first error message
-  return Object.keys(temp).length === 0;  // ❗ IMPORTANT RETURN
-};
+    if (!form.employeeId) newErrors.employeeId = "Employee ID is required";
 
+    if (!form.department) newErrors.department = "Please select a department";
+
+    if (!form.role) newErrors.role = "Please select a role";
+
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    } else if (form.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!form.confirmPassword) {
+      newErrors.confirmPassword = "Confirm your password";
+    } else if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const getPasswordChecks = (password) => {
+    return {
+      length: password.length >= 6,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password),
+    };
+  };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    validate();
+    const { name, value } = e.target;
+
+    setForm({ ...form, [name]: value });
+
+    // clear field error
+    setErrors({ ...errors, [name]: "" });
+
+    // clear global error
+    setError("");
+
+    // 🔥 real-time password check
+    if (name === "password") {
+      setPasswordChecks(getPasswordChecks(value));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-     if (!validate()) return;
-    setError("");
 
-  if (!form.email.endsWith("@iitbhilai.ac.in")) {
-    return setError("Email must end with @iitbhilai.ac.in");
-  }
-
-    if (form.password !== form.confirmPassword) {
-      return setError("Passwords do not match");
-    }
+    if (!validate()) return;
 
     try {
       const res = await axios.post("http://localhost:5000/api/signup", form);
@@ -76,9 +110,7 @@ export default function SignupPage() {
       onSubmit={handleSubmit}
       className="space-y-3 bg-white/10 p-6 rounded-2xl backdrop-blur-md shadow border border-white/20"
     >
-      {error && (
-        <p className="text-red-400 bg-white/20 p-2 rounded">{error}</p>
-      )}
+      {error && <p className="text-red-500 bg-white/20 p-2 rounded">{error}</p>}
 
       <input
         name="fullName"
@@ -87,6 +119,9 @@ export default function SignupPage() {
         onChange={handleChange}
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       />
+      {errors.fullName && (
+        <p className="text-red-500 text-sm">{errors.fullName}</p>
+      )}
 
       <input
         name="email"
@@ -95,6 +130,7 @@ export default function SignupPage() {
         onChange={handleChange}
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       />
+      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
 
       <input
         name="employeeId"
@@ -103,6 +139,9 @@ export default function SignupPage() {
         onChange={handleChange}
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       />
+      {errors.employeeId && (
+        <p className="text-red-500 text-sm">{errors.employeeId}</p>
+      )}
 
       <select
         name="department"
@@ -117,6 +156,9 @@ export default function SignupPage() {
         <option>Electrical</option>
         <option>R&D Department</option>
       </select>
+      {errors.department && (
+        <p className="text-red-500 text-sm">{errors.department}</p>
+      )}
 
       <select
         name="role"
@@ -128,22 +170,59 @@ export default function SignupPage() {
         <option value="RND">RND</option>
         <option value="DEAN">Dean</option>
       </select>
+      {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
 
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
-      />
+      <div className="relative">
+        <input
+          name="password"
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          onChange={handleChange}
+          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+        />
 
-      <input
-        name="confirmPassword"
-        type="password"
-        placeholder="Confirm Password"
-        onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
-      />
+        {/* Eye Button */}
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+      </div>
+      {form.password && (
+        <div className="text-xs mt-2 space-y-1 text-red-500">
+          {!passwordChecks.length && <p>✖ At least 6 characters</p>}
+
+          {!passwordChecks.uppercase && <p>✖ 1 uppercase letter</p>}
+
+          {!passwordChecks.lowercase && <p>✖ 1 lowercase letter</p>}
+
+          {!passwordChecks.number && <p>✖ 1 number</p>}
+
+          {!passwordChecks.special && <p>✖ 1 special character</p>}
+        </div>
+      )}
+
+      <div className="relative">
+        <input
+          name="confirmPassword"
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="Confrm Password"
+          onChange={handleChange}
+          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+        />
+
+        {/* Eye Button */}
+        <span
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+        >
+          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+      </div>
+      {errors.confirmPassword && (
+        <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+      )}
 
       <button className="w-full bg-[var(--primaryAccent)] hover:bg-[var(--primaryAccent)]/70 text-white py-2 rounded-lg font-semibold mt-2">
         Continue → Generate Keys

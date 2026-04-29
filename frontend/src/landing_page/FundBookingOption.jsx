@@ -26,7 +26,7 @@
 //     // "Advance Settlement",
 //     // "Tenure Extension",
 //     // "Direct Purchase",
-//     // "Reimbursement",   
+//     // "Reimbursement",
 //     // "Event / Workshop Expenses",
 //   };
 //   const SelectedForm = processes[process];
@@ -73,6 +73,7 @@
 //     </div>
 //   );
 // }
+
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PurchaseRequisitionForm from "./process_forms/PurchaseRequisitionForm";
@@ -89,8 +90,9 @@ export default function FundBookingOption() {
   // dropdown selection state
   const [process, setProcess] = useState("");
 
-  // process → form mapping
+  // process → form mapping (KEEP full team list)
   const processForms = {
+<<<<<<< HEAD
     "Purchase of Material Procurement > 1 Lakh":PurchaseRequisitionForm,
     "Purchase of Material Procurement < 1 Lakh":PurchaseRequisitionForm,
     "Project Staff recruitment (Man power Hiring)":ManpowerHiringForms,
@@ -111,32 +113,31 @@ export default function FundBookingOption() {
     "Event / Workshop Expenses":null,
   }
 
-const SelectedForm = selectedProcessFromURL
-  ? processForms[selectedProcessFromURL]
-  : null;
+  const SelectedForm = selectedProcessFromURL
+    ? processForms[selectedProcessFromURL]
+    : null;
 
   const handleContinue = () => {
     if (!process) return alert("Select a process first");
 
     navigate(
-      `/fund-booking/${projectId}?process=${encodeURIComponent(process)}`
+      `/fund-booking/${projectId}?process=${encodeURIComponent(process)}`,
     );
   };
 
+  // ❗ Case: process exists but no form yet
   if (selectedProcessFromURL && !SelectedForm) {
-  return (
-    <div className="p-10">
-      <h1 className="text-xl font-semibold">
-        {selectedProcessFromURL}
-      </h1>
-      <p className="mt-4 text-gray-600">
-        This process form is not available yet.
-      </p>
-    </div>
-  );
-}
+    return (
+      <div className="p-10">
+        <h1 className="text-xl font-semibold">{selectedProcessFromURL}</h1>
+        <p className="mt-4 text-gray-600">
+          This process form is not available yet.
+        </p>
+      </div>
+    );
+  }
 
-  /* ---------- CASE 1: Show form ---------- */
+  // ✅ CASE 1: Show form
   if (SelectedForm) {
     return (
       <div className="p-8">
@@ -149,12 +150,10 @@ const SelectedForm = selectedProcessFromURL
     );
   }
 
-  /* ---------- CASE 2: Show process selector ---------- */
+  // ✅ CASE 2: Show process selector
   return (
     <div className="p-10">
-      <h1 className="text-3xl mb-6">
-        Which process do you want to initiate?
-      </h1>
+      <h1 className="text-3xl mb-6">Which process do you want to initiate?</h1>
 
       <select
         value={process}

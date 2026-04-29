@@ -1,8 +1,9 @@
 import React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,24 +16,41 @@ export default function LoginPage() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
     setError("");
+  };
+
+  const validate = () => {
+    let newErrors = {};
+
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    } else if (!form.email.endsWith("@iitbhilai.ac.in")) {
+      newErrors.email = "Email must end with @iitbhilai.ac.in";
+    }
+
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    }
+
+    if (!form.role) {
+      newErrors.role = "Please select a role";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 🔴 Required validation
-    if (!form.email || !form.password || !form.role) {
-      return setError("All fields are required");
-    }
-
-    // 🔴 IIT Bhilai email validation
-    if (!form.email.endsWith("@iitbhilai.ac.in")) {
-      return setError("Email must end with @iitbhilai.ac.in");
-    }
+    if (!validate()) return;
 
     try {
       setLoading(true);
@@ -41,7 +59,7 @@ export default function LoginPage() {
 
       // ✅ Save token
       localStorage.setItem("token", res.data.token);
-      
+
       localStorage.setItem("role", res.data.user.role);
       localStorage.setItem("name", res.data.user.fullName);
 
@@ -49,7 +67,6 @@ export default function LoginPage() {
       if (res.data.user.role === "PI") navigate("/pi-dashboard");
       else if (res.data.user.role === "RND") navigate("/rnd-dashboard");
       else if (res.data.user.role === "DEAN") navigate("/dean-dashboard");
-
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -62,9 +79,7 @@ export default function LoginPage() {
       onSubmit={handleSubmit}
       className="space-y-3 bg-white/10 p-6 rounded-2xl backdrop-blur-md shadow border border-white/20"
     >
-      {error && (
-        <p className="text-red-400 bg-white/20 p-2 rounded">{error}</p>
-      )}
+      {error && <p className="text-red-400 bg-white/20 p-2 rounded">{error}</p>}
 
       <input
         type="email"
@@ -73,14 +88,28 @@ export default function LoginPage() {
         onChange={handleChange}
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       />
+      {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
-      />
+      <div className="relative">
+        <input
+          name="password"
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          onChange={handleChange}
+          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+        />
+
+        {/* Eye Button */}
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+      </div>
+      {errors.password && (
+        <p className="text-red-400 text-sm">{errors.password}</p>
+      )}
 
       <select
         name="role"
@@ -92,6 +121,7 @@ export default function LoginPage() {
         <option value="RND">R&D</option>
         <option value="DEAN">DEAN</option>
       </select>
+      {errors.role && <p className="text-red-400 text-sm">{errors.role}</p>}
 
       <button
         type="submit"
@@ -103,4 +133,3 @@ export default function LoginPage() {
     </form>
   );
 }
-
