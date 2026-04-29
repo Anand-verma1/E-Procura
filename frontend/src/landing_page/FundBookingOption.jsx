@@ -76,6 +76,7 @@
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PurchaseRequisitionForm from "./process_forms/PurchaseRequisitionForm";
+import ManpowerHiringForms from "./process_forms/ManpowerHiringForms" 
 
 export default function FundBookingOption() {
   const { projectId } = useParams();
@@ -92,7 +93,7 @@ export default function FundBookingOption() {
   const processForms = {
     "Purchase of Material Procurement > 1 Lakh":PurchaseRequisitionForm,
     "Purchase of Material Procurement < 1 Lakh":PurchaseRequisitionForm,
-    "Project Staff recruitment":null,
+    "Project Staff recruitment (Man power Hiring)":ManpowerHiringForms,
     "Chair Person":null,
     "No Dues process":null,
     "Event Budget Approval":null,

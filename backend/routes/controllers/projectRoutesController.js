@@ -144,7 +144,7 @@ export const getBifurcatedProjects = async (req, res) => {
     const projects = await CodeCreation.find({
       piEmpId: employeeId, // Must match DB field
       isBifurcated:true,
-    }).select("projectCode totalFundReceived bankTransactionId piName");
+    }).select("projectCode totalFundReceived bankTransactionId piName piSubmissions");
 
 
     res.json(projects);
