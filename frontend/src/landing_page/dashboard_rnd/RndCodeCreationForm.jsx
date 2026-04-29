@@ -58,61 +58,66 @@ export default function RndCodeCreationForm({ onClose }) {
     bankTransactionId: "",
     piEmpId: "",
     piName: "",
-    sequenceNumber:"",
-    year:"",
+    sequenceNumber: "",
+    year: "",
     privateKeyFile: null,
   });
+  const [errors, setErrors] = useState({});
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
 
+    // clear field error
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+
     if (name === "department") {
-  setLoadingCode(true);
+      setLoadingCode(true);
 
-  try {
-    const res = await fetch(
-      "http://localhost:5000/api/projects/project-code",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ department: value }),
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/projects/project-code",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ department: value }),
+          },
+        );
+
+        if (!res.ok) throw new Error("Failed");
+
+        const data = await res.json();
+
+        setFormData((prev) => ({
+          ...prev,
+          department: value,
+          projectCode: data.projectCode,
+          sequenceNumber: data.sequenceNumber,
+          year: data.year,
+        }));
+      } catch (err) {
+        console.error(err);
+        alert("Error generating project code");
+
+        setFormData((prev) => ({
+          ...prev,
+          projectCode: "",
+        }));
+      } finally {
+        setLoadingCode(false);
       }
-    );
 
-    if (!res.ok) throw new Error("Failed");
-
-    const data = await res.json();
-
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
-      department: value,
-      projectCode: data.projectCode,
-      sequenceNumber: data.sequenceNumber,
-      year: data.year
+      [name]: value,
     }));
-
-  } catch (err) {
-    console.error(err);
-    alert("Error generating project code");
-
-    setFormData((prev) => ({
-      ...prev,
-      projectCode: "",
-    }));
-
-  } finally {
-    setLoadingCode(false); 
-  }
-
-  return;
-}
-setFormData((prev)=>({
-  ...prev,
-  [name]:value,
-}));
-};
+  };
 
   // pilist for dropdown list
   useEffect(() => {
@@ -125,8 +130,39 @@ setFormData((prev)=>({
     label: `${pi.employeeId}`,
   }));
 
+  const validate = () => {
+    let newErrors = {};
+
+    if (!formData.department) {
+      newErrors.department = "Department is required";
+    }
+
+    if (!formData.availableFunds) {
+      newErrors.availableFunds = "Available funds is required";
+    } else if (Number(formData.availableFunds) <= 0) {
+      newErrors.availableFunds = "Amount must be greater than 0";
+    }
+
+    if (!formData.transactionId) {
+      newErrors.transactionId = "Transaction ID is required";
+    }
+
+    if (!formData.piEmpId) {
+      newErrors.piEmpId = "Please select a PI";
+    }
+
+    if (!formData.privateKeyFile) {
+      newErrors.privateKeyFile = "Private key is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     if (!formData.privateKeyFile) {
       alert("Upload private key");
@@ -191,7 +227,6 @@ setFormData((prev)=>({
               name="department"
               value={formData.department}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Department</option>
@@ -201,6 +236,9 @@ setFormData((prev)=>({
               <option value="MECHANICAL">MECHANICAL</option>
               <option value="CIVIL">CIVIL</option>
             </select>
+            {errors.department && (
+              <p className="text-red-500 text-sm">{errors.department}</p>
+            )}
           </div>
 
           {/* Project Code */}
@@ -228,9 +266,11 @@ setFormData((prev)=>({
               name="totalFundReceived"
               value={formData.totalFundReceived}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
+            {errors.availableFunds && (
+              <p className="text-red-500 text-sm">{errors.availableFunds}</p>
+            )}
           </div>
 
           {/* Transaction ID */}
@@ -244,9 +284,11 @@ setFormData((prev)=>({
               name="bankTransactionId"
               value={formData.bankTransactionId}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
             />
+            {errors.transactionId && (
+              <p className="text-red-500 text-sm">{errors.transactionId}</p>
+            )}
           </div>
 
           {/* PI Employee ID */}
@@ -257,7 +299,7 @@ setFormData((prev)=>({
             </label>
 
             <Select
-              className=" w-full rounded-lg text-sm font-medium text-gray-600 focus:ring-blue-500"
+              className="w-full rounded-lg text-sm font-medium text-gray-600 focus:ring-blue-500"
               options={options}
               value={options.find((opt) => opt.value === formData.piEmpId)}
               onChange={(selected) => {
@@ -265,15 +307,25 @@ setFormData((prev)=>({
                   (pi) => pi.employeeId === selected.value,
                 );
 
-                setFormData((prev)=>({
+                setFormData((prev) => ({
                   ...prev,
                   piEmpId: selectedPI.employeeId,
                   piName: selectedPI.fullName,
+                }));
+
+                // clear error (important UX improvement)
+                setErrors((prev) => ({
+                  ...prev,
+                  piEmpId: "",
                 }));
               }}
               placeholder="Select PI Employee ID"
               maxMenuHeight={120}
             />
+
+            {errors.piEmpId && (
+              <p className="text-red-500 text-sm">{errors.piEmpId}</p>
+            )}
           </div>
 
           {/* PI Name */}
@@ -287,7 +339,6 @@ setFormData((prev)=>({
               name="piName"
               value={formData.piName}
               onChange={handleChange}
-              required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100"
               disabled
             />
@@ -304,15 +355,22 @@ setFormData((prev)=>({
                 type="file"
                 name="privateKeyFile"
                 accept=".pem"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
                     privateKeyFile: e.target.files[0],
-                  })
-                }
-                required
+                  }));
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    privateKeyFile: "",
+                  }));
+                }}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
               />
+              {errors.privateKeyFile && (
+                <p className="text-red-500 text-sm">{errors.privateKeyFile}</p>
+              )}
             </div>
             <button
               type="submit"

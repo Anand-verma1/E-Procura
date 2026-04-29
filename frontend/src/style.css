@@ -11,8 +11,14 @@
 
 /* Animation to left heading of hero */
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeInUp {
@@ -22,7 +28,11 @@
 /* 🌌 Dashboard Background */
 .dashboard-bg {
   min-height: 100vh;
-  background: radial-gradient(circle at top left, var(--primaryAccent), #01161e 60%);
+  background: radial-gradient(
+    circle at top left,
+    var(--primaryAccent),
+    #01161e 60%
+  );
   position: relative;
   overflow: hidden;
 }
@@ -54,9 +64,15 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-40px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* 🪟 Glass cards */
@@ -102,4 +118,14 @@
 .btn-primary:hover {
   transform: scale(1.05);
   box-shadow: 0 10px 30px rgba(174, 195, 176, 0.5);
+}
+
+/* Hide scrollbar but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
 }
