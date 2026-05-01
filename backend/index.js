@@ -6,11 +6,11 @@ import User from "./models/user.js";
 import Purchase from "./models/Purchase.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-// import { upload } from "./middleware/upload.js";
 import { auth } from "./middleware/auth.js";
 import fs from "fs"
 import puppeteer from "puppeteer";
 import projectRoutes from "./routes/projectsRoutes.js"
+import fileRoutes from "./routes/fileRoutes.js"
 
 
 const app = express();
@@ -116,40 +116,6 @@ app.post("/api/login", async (req, res) => {
 });
 
 
-// Download project file with tamper check
-app.get("/project/file/:id", auth(["PI", "RND", "DEAN"]), async (req, res) => {
-  try {
-    const project = await Project.findById(req.params.id);
-    if (!project) return res.status(404).json({ msg: "Not found" });
-
-     // file missing check
-    if (!fs.existsSync(project.attachmentPath)) {
-  return res.status(200).json({
-    tampered: true,
-    message: "File missing or tampered",
-  });
-}
-
-    // read file
-    const fileBuffer = fs.readFileSync(project.attachmentPath);
-    
-    // generate new hash for verification
-    const newHash = crypto
-      .createHash("sha256")
-      .update(fileBuffer)
-      .digest("hex");
-
-    const tampered = newHash !== project.pdfHash;
-
-    res.json({
-      tampered,
-      fileUrl: `http://localhost:5000/${project.attachmentPath}`,
-    });
-  } catch (err) {
-    res.status(500).json({ msg: "Error reading file" });
-  }
-});
-
 app.post("/purchase/submit", async (req, res) => {
   try {
     const form = req.body;
@@ -192,6 +158,7 @@ app.post("/purchase/submit", async (req, res) => {
 
 
 app.use("/api/projects",projectRoutes); 
+app.use("/api/files",fileRoutes);
 
 
 
