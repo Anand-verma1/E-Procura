@@ -37,9 +37,9 @@ function NavBar() {
                 </Link>
               )}
 
-              {role === "DEAN" && (
-                <Link to="/dean-dashboard" className="hover:underline">
-                  Dean Dashboard
+              {role === "DORD" && (
+                <Link to="/DORD-dashboard" className="hover:underline">
+                  DORD Dashboard
                 </Link>
               )}
 

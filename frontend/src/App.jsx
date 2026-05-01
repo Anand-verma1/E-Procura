@@ -2,14 +2,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import DashboardPI from "./landing_page/dashboard_pi/DashboardPI";
 import DashboardRND from "./landing_page/dashboard_rnd/DashboardRND";
-import DashboardDean from "./landing_page/dashboard_dean/DashboardDean";
+import DashboardDORD from "./landing_page/dashboard_DORD/DashboardDORD";
 import ProjectBifurcationForm from "./landing_page/dashboard_pi/ProjectBifurcationForm";
-import ProjectSummary from "./landing_page/project_summary/ProjectSummary";
-import FundBookingOption from "./landing_page/FundBookingOption";
+import ProjectSummary from "./landing_page/dashboard_pi/ProjectSummary";
+import FundBookingPage from "./landing_page/FundBookingPage";
 
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-import HomePage from "./landing_page/home/HomePage";
+import AuthPageWrapper from "./components/AuthPageWrapper";
 import GenerateKey from "./landing_page/key_gen/GenerateKey";
 
 import FundBifurcationList from "./landing_page/dashboard_pi/FundBifurcationList";
@@ -27,7 +27,7 @@ function App() {
           path="/"
           element={
             <PublicRoute>
-              <HomePage />
+              <AuthPageWrapper />
             </PublicRoute>
           }
         />
@@ -53,10 +53,10 @@ function App() {
         />
 
         <Route
-          path="/dean-dashboard"
+          path="/DORD-dashboard"
           element={
-            <ProtectedRoute allowedRole="DEAN">
-              <DashboardDean />
+            <ProtectedRoute allowedRole="DORD">
+              <DashboardDORD />
             </ProtectedRoute>
           }
         />
@@ -67,7 +67,7 @@ function App() {
 
         <Route
           path="/fund-booking/:projectId"
-          element={<FundBookingOption />}
+          element={<FundBookingPage />}
         />
       </Routes>
 

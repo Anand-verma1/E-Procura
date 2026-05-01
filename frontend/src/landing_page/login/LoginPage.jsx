@@ -66,7 +66,7 @@ export default function LoginPage() {
       // ✅ Role-based dashboard redirect
       if (res.data.user.role === "PI") navigate("/pi-dashboard");
       else if (res.data.user.role === "RND") navigate("/rnd-dashboard");
-      else if (res.data.user.role === "DEAN") navigate("/dean-dashboard");
+      else if (res.data.user.role === "DORD") navigate("/DORD-dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -117,9 +117,10 @@ export default function LoginPage() {
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       >
         <option value="">Select Role</option>
-        <option value="PI">Principal Investigator (PI)</option>
-        <option value="RND">R&D</option>
-        <option value="DEAN">DEAN</option>
+        <option value="PI">PI (Principal Investigator)</option>
+        <option value="DORD">DORD (Dean of R&D)</option>
+        <option value="DRRD">DRRD (Deputy Registrar of R&D)</option>
+        <option value="RND">RND (Research and Development)</option>
       </select>
       {errors.role && <p className="text-red-400 text-sm">{errors.role}</p>}
 

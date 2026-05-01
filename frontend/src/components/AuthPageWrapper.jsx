@@ -1,5 +1,5 @@
-import AuthCard from "../../context/AuthCard";
-function Hero() {
+import AuthCard from "../context/AuthCard";
+function AuthPageWrapper() {
     return (
         <>
         <div className="relative w-full h-screen overflow-hidden">
@@ -42,4 +42,4 @@ text-transparent bg-clip-text drop-shadow-xl">
     );
 }
 
-export default Hero;
+export default AuthPageWrapper;

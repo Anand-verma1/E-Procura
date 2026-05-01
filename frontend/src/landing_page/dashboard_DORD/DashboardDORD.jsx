@@ -1,7 +1,7 @@
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
-// function DashboardDean() {
+// function DashboardDORD() {
 //   const [projects, setProjects] = useState([]);
 //   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@
 //     const updated = stored.map((p) => {
 //       if (p.projectId === projectId) {
 //         let newStatus =
-//           action === "approve" ? "Approved by Dean" : "Rejected by Dean";
+//           action === "approve" ? "Approved by DORD" : "Rejected by DORD";
 
 //         // Combine logic if R&D already acted
 //         if (p.status === "Approved by R&D" && action === "approve")
@@ -42,7 +42,7 @@
 //   return (
 //     <div className="container mt-5 mb-5">
 //       <div className="card shadow p-4">
-//         <h4 className="text-primary mb-4 text-center">Dean Dashboard</h4>
+//         <h4 className="text-primary mb-4 text-center">DORD Dashboard</h4>
 
 //         {projects.length === 0 ? (
 //           <div className="alert alert-info text-center">
@@ -114,23 +114,23 @@
 //   );
 // }
 
-// export default DashboardDean;
+// export default DashboardDORD;
 
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
-// export default function DashboardDean() {
+// export default function DashboardDORD() {
 //   const [projects, setProjects] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const navigate = useNavigate();
 
-//   // Fetch pending dean projects
+//   // Fetch pending DORD projects
 //   useEffect(() => {
 //     const fetchProjects = async () => {
 //       try {
 //         const token = localStorage.getItem("token");
 
-//         const res = await fetch("http://localhost:5000/project/dean", {
+//         const res = await fetch("http://localhost:5000/project/DORD", {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
@@ -203,12 +203,12 @@
 
 // }
 
-// -------------Updated dean dashboard---------------
+// -------------Updated DORD dashboard---------------
 
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
-// function DashboardDean() {
+// function DashboardDORD() {
 //   const [projects, setProjects] = useState([]);
 //   const navigate = useNavigate();
 
@@ -216,26 +216,26 @@
 
 //   // 🔥 Map backend status → UI status
 //   const getDisplayStatus = (status) => {
-//     if (status?.includes("Dean")) {
+//     if (status?.includes("DORD")) {
 //       if (status.includes("Approved")) return "Approved";
 //       if (status.includes("Rejected")) return "Rejected";
 //     }
 //     return "Pending";
 //   };
 
-//   // 🔥 Filter only valid projects for Dean
-//   const filterDeanProjects = (data) => {
+//   // 🔥 Filter only valid projects for DORD
+//   const filterDORDProjects = (data) => {
 //     return data.filter(
 //       (p) =>
 //         p.status === "Approved by R&D" ||
-//         p.status === "Pending Dean Approval" ||
-//         p.status?.includes("Dean"),
+//         p.status === "Pending DORD Approval" ||
+//         p.status?.includes("DORD"),
 //     );
 //   };
 
 //   useEffect(() => {
 //     const storedProjects = getProjects();
-//     setProjects(filterDeanProjects(storedProjects));
+//     setProjects(filterDORDProjects(storedProjects));
 //   }, []);
 
 //   const updateStatus = (projectId, action) => {
@@ -246,7 +246,7 @@
 //     const updated = stored.map((p) => {
 //       if (p.projectId === projectId) {
 //         let newStatus =
-//           action === "approve" ? "Approved by Dean" : "Rejected by Dean";
+//           action === "approve" ? "Approved by DORD" : "Rejected by DORD";
 
 //         // Keep backend logic intact
 //         if (p.status === "Approved by R&D" && action === "approve")
@@ -261,7 +261,7 @@
 //     });
 
 //     localStorage.setItem("projects", JSON.stringify(updated));
-//     setProjects(filterDeanProjects(updated));
+//     setProjects(filterDORDProjects(updated));
 //   };
 
 //   const getStatusColor = (status) => {
@@ -274,7 +274,7 @@
 //     <div className="p-6">
 //       <div className="shadow-lg rounded-xl p-6 bg-white">
 //         <h2 className="text-xl font-semibold text-center mb-6">
-//           Dean Dashboard
+//           DORD Dashboard
 //         </h2>
 
 //         {projects.length === 0 ? (
@@ -363,13 +363,13 @@
 //   );
 // }
 
-// export default DashboardDean;
+// export default DashboardDORD;
 
-//--------------------Dean dashboard with (Dummy data)-----------------------
+//--------------------DORD dashboard with (Dummy data)-----------------------
 
 import { useState } from "react";
 
-function DashboardDeanPreview() {
+function DashboardDORDPreview() {
   const [projects, setProjects] = useState([
     {
       projectId: "CSE-101",
@@ -383,21 +383,21 @@ function DashboardDeanPreview() {
       title: "IoT System",
       piName: "Dr. Verma",
       totalFund: 300000,
-      status: "Pending Dean Approval", // Pending
+      status: "Pending DORD Approval", // Pending
     },
     {
       projectId: "MECH-303",
       title: "Robotics Lab",
       piName: "Dr. Singh",
       totalFund: 800000,
-      status: "Approved by Dean", // Approved
+      status: "Approved by DORD", // Approved
     },
     {
       projectId: "CIVIL-404",
       title: "Bridge Design",
       piName: "Dr. Patel",
       totalFund: 600000,
-      status: "Rejected by Dean", // Rejected
+      status: "Rejected by DORD", // Rejected
     },
     {
       projectId: "ELEC-505",
@@ -418,21 +418,21 @@ function DashboardDeanPreview() {
       title: "Wireless Sensor Networks",
       piName: "Dr. Iyer",
       totalFund: 320000,
-      status: "Pending Dean Approval",
+      status: "Pending DORD Approval",
     },
     {
       projectId: "MECH-308",
       title: "Thermal Engineering Study",
       piName: "Dr. Khan",
       totalFund: 700000,
-      status: "Approved by Dean",
+      status: "Approved by DORD",
     },
     {
       projectId: "CIVIL-409",
       title: "Urban Infrastructure Design",
       piName: "Dr. Gupta",
       totalFund: 650000,
-      status: "Rejected by Dean",
+      status: "Rejected by DORD",
     },
     {
       projectId: "ELEC-510",
@@ -453,14 +453,14 @@ function DashboardDeanPreview() {
       title: "Embedded Systems Design",
       piName: "Dr. Thomas",
       totalFund: 360000,
-      status: "Pending Dean Approval",
+      status: "Pending DORD Approval",
     },
     {
       projectId: "MECH-813",
       title: "Automobile Innovation",
       piName: "Dr. Bansal",
       totalFund: 820000,
-      status: "Approved by Dean",
+      status: "Approved by DORD",
     },
     {
       projectId: "CIVIL-914",
@@ -474,7 +474,7 @@ function DashboardDeanPreview() {
       title: "Renewable Energy Systems",
       piName: "Dr. Chatterjee",
       totalFund: 770000,
-      status: "Pending Dean Approval",
+      status: "Pending DORD Approval",
     },
   ]);
 
@@ -483,7 +483,7 @@ function DashboardDeanPreview() {
 
   // 🔥 Map backend → UI
   const getDisplayStatus = (status) => {
-    if (status?.includes("Dean")) {
+    if (status?.includes("DORD")) {
       if (status.includes("Approved")) return "Approved";
       if (status.includes("Rejected")) return "Rejected";
     }
@@ -497,7 +497,7 @@ function DashboardDeanPreview() {
       prev.map((p) => {
         if (p.projectId === projectId) {
           let newStatus =
-            action === "approve" ? "Approved by Dean" : "Rejected by Dean";
+            action === "approve" ? "Approved by DORD" : "Rejected by DORD";
 
           if (p.status === "Approved by R&D" && action === "approve")
             newStatus = "Fully Approved";
@@ -531,7 +531,7 @@ function DashboardDeanPreview() {
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Dean Dashboard (Preview)</h2>
+        <h2 className="text-2xl font-semibold">DORD Dashboard (Preview)</h2>
         <p className="text-gray-500">
           Total Projects: {filteredProjects.length}
         </p>
@@ -637,4 +637,4 @@ function DashboardDeanPreview() {
   );
 }
 
-export default DashboardDeanPreview;
+export default DashboardDORDPreview;

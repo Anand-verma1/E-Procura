@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../../components/BackButton";
 
 export default function FundBifurcationList() {
   const [projects, setProjects] = useState([]);
@@ -30,8 +31,11 @@ export default function FundBifurcationList() {
   if (loading) return <p className="text-center mt-5">Loading....</p>;
   return (
     <div className="min-h-screen bg-[#d6e3da] mt-4">
+      <div className="flex justify-end m-4">
+        <BackButton />
+      </div>
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        Projects Pending Bifurcation
+        Projects Pending Bifurcation (List of Unbifurcated Projects)
       </h2>
 
       {projects.length === 0 ? (
@@ -40,9 +44,8 @@ export default function FundBifurcationList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {projects.map((proj, index) => (
             <div key={index}>
-
               {/* NON-BIFURCATED PROJECTS */}
-              
+
               <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow hover:shadow-lg transition duration-300">
                 {/* Project Code */}
                 <h5 className="text-lg font-semibold text-gray-800 mb-2">

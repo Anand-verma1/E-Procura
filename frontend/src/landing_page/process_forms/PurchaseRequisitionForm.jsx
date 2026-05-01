@@ -746,7 +746,7 @@ async function handleSecureSubmit() {
 )}
         </div>
 
-        <div className="grid  text-right mt-6">HOD/Dean/Registrar/Director</div>
+        <div className="grid  text-right mt-6">HOD/DORD/Registrar/Director</div>
      {/* <div className="mt-6">
   <label className="font-semibold">Upload Private Key:</label>
   <input
