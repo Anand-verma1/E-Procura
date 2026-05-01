@@ -9,7 +9,7 @@
   --light: #eff6e0;
 }
 
-/* Animation to left heading of hero */
+/* Animation to left heading of AuthPageWrapper */
 @keyframes fadeInUp {
   0% {
     opacity: 0;

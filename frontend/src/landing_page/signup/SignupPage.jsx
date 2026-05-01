@@ -166,9 +166,10 @@ export default function SignupPage() {
         className="w-full p-2 rounded-lg bg-white text-black outline-none"
       >
         <option value="">Select Role</option>
-        <option value="PI">Principal Investigator (PI)</option>
-        <option value="RND">RND</option>
-        <option value="DEAN">Dean</option>
+        <option value="PI">PI (Principal Investigator)</option>
+        <option value="DORD">DORD (Dean of R&D)</option>
+        <option value="DRRD">DRRD (Deputy Registrar of R&D)</option>
+        <option value="RND">RND (Research and Development)</option>
       </select>
       {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
 

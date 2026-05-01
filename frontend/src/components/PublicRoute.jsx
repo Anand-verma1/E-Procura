@@ -7,7 +7,7 @@ export default function PublicRoute({ children }) {
   if (token) {
     if (role === "PI") return <Navigate to="/pi-dashboard" replace />;
     if (role === "RND") return <Navigate to="/rnd-dashboard" replace />;
-    if (role === "DEAN") return <Navigate to="/dean-dashboard" replace />;
+    if (role === "DORD") return <Navigate to="/DORD-dashboard" replace />;
   }
 
   return children;
