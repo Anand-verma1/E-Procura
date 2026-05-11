@@ -122,6 +122,15 @@ export default function DashboardPI() {
                 >
                   Fund Booking
                 </button>
+                <button
+            className="btn-primary "
+            onClick={() => navigate("/pi-fund-requests")}
+          >
+            Fund Booking status
+             <p className="text-gray-600">
+            Track pending, approved and rejected requests
+          </p>
+          </button>
               </div>
             </div>
           ))}

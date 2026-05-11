@@ -62,7 +62,7 @@ let totalAmount = 0;
       projectCode: project.projectCode,
       head,
       positions,
-      totalAmount,
+      requestedAmount : totalAmount,
       process,
       requestedBy: req.user.email, // from JWT
     });
@@ -74,5 +74,21 @@ let totalAmount = 0;
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// get fund request status
+export const getMyFundRequests = async (req, res) => {
+  try {
+    const requests = await FundBooking.find({
+      requestedBy: req.user.email,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(requests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };

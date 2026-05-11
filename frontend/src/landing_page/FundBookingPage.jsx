@@ -217,7 +217,7 @@ const totalAmount =
   // validation
   const isExceeded =
     selectedHead &&
-    totalAmount > project.piSubmissions?.divisionHeads[selectedHead];
+    totalAmount> project.piSubmissions?.divisionHeads[selectedHead];
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -258,7 +258,7 @@ const totalAmount =
 
           {selectedHead && (
             <p className="mt-2 text-sm text-gray-600">
-              Available Amount: ₹
+              Available Fund: ₹
               {project.piSubmissions?.divisionHeads[selectedHead]}
             </p>
           )}

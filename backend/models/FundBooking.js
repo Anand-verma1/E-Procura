@@ -25,7 +25,7 @@ const fundBookingSchema = new mongoose.Schema(
       },
     ],
 
-    totalAmount: {
+    requestedAmount: {
       type: Number,
       required: true,
     },
@@ -33,9 +33,15 @@ const fundBookingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      default: "PENDING",
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
     },
 
+    // dean remark
+    remarkByDean: {
+      type: String,
+      default: "",
+    },
     requestedBy: {
       type: String, // PI employeeId
     },
