@@ -16,7 +16,7 @@ import fundBookingRoutes from "./routes/fundBookingRoutes.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use("/uploads", express.static("uploads"));
 
 // connect to DB
@@ -165,4 +165,4 @@ app.use("/api/fund-booking", fundBookingRoutes);
 
 
 // SERVER RUN
-app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+app.listen(5001, () => console.log("🚀 Server running on port 5001"));
