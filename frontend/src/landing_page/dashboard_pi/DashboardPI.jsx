@@ -16,7 +16,7 @@ export default function DashboardPI() {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          "http://localhost:5000/api/projects/bifurcated",
+          "/api/projects/bifurcated",
           {
             headers: {
               Authorization: `Bearer ${token}`,

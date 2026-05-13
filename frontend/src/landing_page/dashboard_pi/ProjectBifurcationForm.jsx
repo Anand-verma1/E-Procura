@@ -89,7 +89,7 @@ useEffect(() => {
 
 const fetchProject = async () => {
   try {
-    const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+    const res = await fetch(`/api/projects/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -170,7 +170,7 @@ const fetchProject = async () => {
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+  const res = await fetch(`/api/projects/${id}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,

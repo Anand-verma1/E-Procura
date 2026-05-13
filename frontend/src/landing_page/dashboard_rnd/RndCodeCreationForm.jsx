@@ -78,7 +78,7 @@ export default function RndCodeCreationForm({ onClose }) {
 
       try {
         const res = await fetch(
-          "http://localhost:5000/api/projects/project-code",
+          "/api/projects/project-code",
           {
             method: "POST",
             headers: {
@@ -121,7 +121,7 @@ export default function RndCodeCreationForm({ onClose }) {
 
   // pilist for dropdown list
   useEffect(() => {
-    fetch("http://localhost:5000/api/projects/pi-list")
+    fetch("/api/projects/pi-list")
       .then((res) => res.json())
       .then((data) => setPiList(data));
   }, []);
@@ -170,7 +170,7 @@ export default function RndCodeCreationForm({ onClose }) {
 
     const signature = await signPayload(privateKeyPem, payload);
 
-    const res = await fetch("http://localhost:5000/api/projects", {
+    const res = await fetch("/api/projects", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -16,7 +16,7 @@ export default function GenerateKey() {
     publicKey: publicKeyPem,
   });
      // 🟢 Save public key to backend
-  await fetch("http://localhost:5000/api/save-public-key", {
+  await fetch("/api/save-public-key", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

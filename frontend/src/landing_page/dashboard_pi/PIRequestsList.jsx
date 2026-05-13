@@ -16,7 +16,7 @@ export default function PIRequestsList() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:5000/api/fund-booking",
+        "/api/fund-booking",
         {
           headers: {
             Authorization: `Bearer ${token}`,

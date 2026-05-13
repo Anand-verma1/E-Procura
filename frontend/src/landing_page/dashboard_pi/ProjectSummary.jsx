@@ -14,7 +14,7 @@ export default function ProjectSummary() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+        const res = await fetch(`/api/projects/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -47,7 +47,7 @@ export default function ProjectSummary() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/files/${project._id}`,
+        `/api/files/${project._id}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       console.log("res", res);

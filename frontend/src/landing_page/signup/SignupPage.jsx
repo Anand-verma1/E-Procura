@@ -94,7 +94,7 @@ export default function SignupPage() {
     if (!validate()) return;
 
     try {
-      const res = await axios.post("http://localhost:5000/api/signup", form);
+      const res = await axios.post("/api/signup", form);
 
       if (res.data.success) {
         localStorage.setItem("signupEmail", form.email);

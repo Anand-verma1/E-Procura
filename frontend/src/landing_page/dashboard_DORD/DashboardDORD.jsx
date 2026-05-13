@@ -130,7 +130,7 @@
 //       try {
 //         const token = localStorage.getItem("token");
 
-//         const res = await fetch("http://localhost:5000/project/DORD", {
+//         const res = await fetch("/project/DORD", {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },

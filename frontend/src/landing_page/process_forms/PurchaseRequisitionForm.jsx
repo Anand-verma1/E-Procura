@@ -133,7 +133,7 @@ useEffect(() => {
 //     // formDataToSend.append("pdfHash", hashHex); // Important
 
 //     await axios.post(
-//   "http://localhost:5000/purchase/submit",
+//   "/purchase/submit",
 //   formDataToSend,
 //   {
 //     headers: {
@@ -153,7 +153,7 @@ useEffect(() => {
 async function handleSecureSubmit() {
   try {
     const response = await axios.post(
-      "http://localhost:5000/purchase/submit",
+      "/purchase/submit",
       form, // send full form JSON
       {
         responseType: "blob", // IMPORTANT

@@ -13,7 +13,7 @@ export default function FundBifurcationList() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/projects", {
+      const res = await fetch("/api/projects", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
