@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import ManpowerHiringForm from "./process_forms/ManpowerHiringForm";
 
 export default function FundBookingPage() {
   const { id } = useParams(); // id from route
@@ -282,95 +283,7 @@ const totalAmount =
           </select>
         </div>
 
-        {/* MANPOWER FORM */}
-        {process === "manpower" && (
-          <div className="border-t pt-6 mt-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Manpower Hiring Details
-            </h3>
-
-            {/* Table */}
-            <div className="space-y-4">
-              {positions.map((pos, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-5 gap-3 items-center"
-                >
-                  <select
-                    value={pos.role}
-                    onChange={(e) =>
-                      handleChange(index, "role", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  >
-                    <option value="">Select Role</option>
-                    <option value="Assistant">Project Assistant</option>
-                    <option value="Manager">Project Manager</option>
-                    <option value="Associate">Project Associate</option>
-                    <option value="JRF">JRF</option>
-                    <option value="SRF">SRF</option>
-                    <option value="Postdoc">Post Doctoral Fellow</option>
-                    <option value="ProjectEngineer">Project Engineer</option>
-                    <option value="Intern">Intern</option>
-                  </select>
-
-                  <input
-                    type="number"
-                    placeholder="Post"
-                    value={pos.post}
-                    onChange={(e) =>
-                      handleChange(index, "post", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Salary"
-                    value={pos.salary}
-                    onChange={(e) =>
-                      handleChange(index, "salary", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Months"
-                    value={pos.months}
-                    onChange={(e) =>
-                      handleChange(index, "months", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-
-                  <div className="font-semibold text-gray-700">
-                    ₹ {pos.amount.toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Add Row */}
-            <button onClick={addPosition} className="mt-4 text-blue-600">
-              + Add Position
-            </button>
-
-            {/* Total */}
-            <div className="mt-6 text-lg font-semibold">
-              Total: ₹ {totalAmount.toLocaleString()}
-            </div>
-
-            {/* Validation */}
-            {isExceeded && (
-              <p className="text-red-500 mt-2 text-sm">
-                ⚠ Amount exceeds selected head budget
-              </p>
-            )}
-
-           
-          </div>
-        )}
+        {process === "manpower" && <ManpowerHiringForm />}
       </div>
        {/* Other Processes Form */}
             {process && process !== "manpower" && (
