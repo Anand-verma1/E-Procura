@@ -12,11 +12,12 @@ import puppeteer from "puppeteer";
 import projectRoutes from "./routes/projectsRoutes.js"
 import fileRoutes from "./routes/fileRoutes.js"
 import fundBookingRoutes from "./routes/fundBookingRoutes.js";
+import manpowerHiringRoutes from "./routes/manpowerHiringRoutes.js";
 
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
 // connect to DB
@@ -158,9 +159,10 @@ app.post("/purchase/submit", async (req, res) => {
 });
 
 
-app.use("/api/projects",projectRoutes); 
+app.use("/api/projects",projectRoutes);
 app.use("/api/files",fileRoutes);
 app.use("/api/fund-booking", fundBookingRoutes);
+app.use("/api/manpower-hiring", manpowerHiringRoutes);
 
 
 

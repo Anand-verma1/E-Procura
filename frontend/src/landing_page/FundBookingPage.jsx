@@ -5,6 +5,7 @@ import ManpowerHiringForm from "./process_forms/ManpowerHiringForm";
 export default function FundBookingPage() {
   const { id } = useParams(); // id from route
   const [project, setProject] = useState(null);
+  const [piEmail, setPiEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [process, setProcess] = useState("");
@@ -101,6 +102,11 @@ export default function FundBookingPage() {
         console.log("project data", data);
 
         setProject(data);
+
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          setPiEmail(payload.email || "");
+        } catch {}
       } catch (err) {
         console.error(err);
       } finally {
@@ -283,7 +289,15 @@ const totalAmount =
           </select>
         </div>
 
-        {process === "manpower" && <ManpowerHiringForm />}
+        {process === "manpower" && (
+          <ManpowerHiringForm
+            projectId={project._id}
+            projectCode={project.projectCode}
+            projectTitle={project.piSubmissions?.title}
+            piName={project.piName}
+            piEmail={piEmail}
+          />
+        )}
       </div>
        {/* Other Processes Form */}
             {process && process !== "manpower" && (
