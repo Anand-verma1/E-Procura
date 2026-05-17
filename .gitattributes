@@ -1,0 +1,11 @@
+# Normalize line endings to LF for everyone (prevents CRLF issues on Windows)
+* text=auto eol=lf
+
+# Binary files — don't touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.pem binary

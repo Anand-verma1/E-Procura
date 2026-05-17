@@ -56,13 +56,14 @@ export default function PIRequestsList() {
   }
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-2xl font-bold mb-6">
+    <div className="p-4 sm:p-8 bg-gray-100 min-h-screen">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6">
           My Fund Requests
         </h2>
 
-        <table className="w-full border border-gray-300">
+        <div className="overflow-x-auto">
+        <table className="w-full border border-gray-300 min-w-[700px]">
           <thead className="bg-gray-200">
             <tr>
               <th className="p-3 border">Project Code</th>
@@ -156,6 +157,7 @@ export default function PIRequestsList() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

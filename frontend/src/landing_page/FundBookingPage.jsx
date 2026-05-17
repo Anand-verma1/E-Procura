@@ -227,8 +227,8 @@ const totalAmount =
     totalAmount> project.piSubmissions?.divisionHeads[selectedHead];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="bg-white p-8 rounded-2xl shadow-lg">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
+      <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-lg">
         {/* HEADER */}
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Fund Booking</h2>
 
@@ -328,7 +328,7 @@ const totalAmount =
   </div>
 )}
                   {/* Submit */}
-                  {process && (
+                  {process && process !== "manpower" && (
             <button
               onClick={handleSubmit}
               disabled={!selectedHead || isExceeded || !process}

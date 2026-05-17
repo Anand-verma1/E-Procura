@@ -528,23 +528,23 @@ function DashboardDORDPreview() {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">DORD Dashboard (Preview)</h2>
-        <p className="text-gray-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+        <h2 className="text-xl sm:text-2xl font-semibold">DORD Dashboard (Preview)</h2>
+        <p className="text-gray-500 text-sm">
           Total Projects: {filteredProjects.length}
         </p>
       </div>
 
       {/* Search + Filter */}
-      <div className="flex gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
           type="text"
           placeholder="Search by Project ID or PI"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded-lg w-1/3"
+          className="border px-3 py-2 rounded-lg w-full sm:w-1/3"
         />
 
         <select
@@ -561,7 +561,7 @@ function DashboardDORDPreview() {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full border border-gray-300 rounded-lg">
+        <table className="w-full border border-gray-300 rounded-lg min-w-[600px]">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-2">Project ID</th>
@@ -598,15 +598,16 @@ function DashboardDORDPreview() {
                     </span>
                   </td>
 
-                  <td className="p-2 space-x-2">
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded text-sm cursor-pointer">
+                  <td className="p-2">
+                    <div className="flex flex-wrap gap-1 justify-center">
+                    <button className="bg-blue-500 text-white px-2 py-1 rounded text-xs cursor-pointer">
                       View
                     </button>
 
                     <button
                       disabled={isFinal}
                       onClick={() => updateStatus(p.projectId, "approve")}
-                      className={`px-2 py-1 rounded text-sm ${
+                      className={`px-2 py-1 rounded text-xs ${
                         isFinal
                           ? "bg-gray-300"
                           : "bg-green-500 text-white cursor-pointer"
@@ -618,7 +619,7 @@ function DashboardDORDPreview() {
                     <button
                       disabled={isFinal}
                       onClick={() => updateStatus(p.projectId, "reject")}
-                      className={`px-2 py-1 rounded text-sm ${
+                      className={`px-2 py-1 rounded text-xs ${
                         isFinal
                           ? "bg-gray-300"
                           : "bg-red-500 text-white cursor-pointer"
@@ -626,6 +627,7 @@ function DashboardDORDPreview() {
                     >
                       Reject
                     </button>
+                    </div>
                   </td>
                 </tr>
               );

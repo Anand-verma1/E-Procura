@@ -46,23 +46,23 @@ export default function DashboardPI() {
   );
 
   return (
-    <div className="min-h-screen bg-[#d6e3da] p-8 ">
+    <div className="min-h-screen bg-[#d6e3da] p-4 sm:p-8">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         {/* LEFT: Welcome */}
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
             Welcome, <span className="text-blue-600">{fullName}</span> 👋
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
             Manage your projects and fund processes efficiently
           </p>
         </div>
 
         {/* RIGHT: Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           {/* Search */}
-          <div className="flex items-center bg-white shadow rounded-full px-3 py-2 w-64">
+          <div className="flex items-center bg-white shadow rounded-full px-3 py-2 w-full sm:w-64">
             <input
               type="text"
               placeholder="Search Project by Code...🔍"
@@ -73,7 +73,7 @@ export default function DashboardPI() {
           </div>
 
           <button
-            className="btn-primary "
+            className="btn-primary"
             onClick={() => navigate("/projects")}
           >
             + Add Fund Bifurcation
@@ -108,29 +108,26 @@ export default function DashboardPI() {
                 Bifurcated ✔
               </span>
 
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => navigate(`/summary/${proj._id}`)}
-                  className="border border-[#aec3b0] px-4 py-2 rounded-lg hover:bg-[#aec3b0] hover:text-black transition"
+                  className="border border-[#aec3b0] px-3 py-2 rounded-lg hover:bg-[#aec3b0] hover:text-black transition text-sm"
                 >
                   View Summary
                 </button>
 
                 <button
                   onClick={() => navigate(`/fund-booking/${proj._id}`)}
-                  className="btn-primary"
+                  className="btn-primary text-sm"
                 >
                   Fund Booking
                 </button>
                 <button
-            className="btn-primary "
-            onClick={() => navigate("/pi-fund-requests")}
-          >
-            Fund Booking status
-             <p className="text-gray-600">
-            Track pending, approved and rejected requests
-          </p>
-          </button>
+                  className="btn-primary text-sm"
+                  onClick={() => navigate("/pi-fund-requests")}
+                >
+                  Booking Status
+                </button>
               </div>
             </div>
           ))}
@@ -142,7 +139,7 @@ export default function DashboardPI() {
         <h2 className="text-2xl font-semibold text-gray-800 m-6">
           General Processes
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
           {/* PROCESS CARD */}
           {[
             "No Dues Process",

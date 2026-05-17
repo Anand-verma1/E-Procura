@@ -1,10 +1,15 @@
 import ManpowerHiring from "../../models/ManpowerHiring.js";
 import CodeCreation from "../../models/codeCreation.js";
+import User from "../../models/user.js";
+import crypto from "crypto";
 
 export const createManpowerHiring = async (req, res) => {
   try {
     if (!req.body.formData) {
       return res.status(400).json({ message: "formData missing" });
+    }
+    if (!req.body.signature) {
+      return res.status(400).json({ message: "signature missing" });
     }
 
     const form = JSON.parse(req.body.formData);
@@ -12,6 +17,29 @@ export const createManpowerHiring = async (req, res) => {
     const project = await CodeCreation.findById(form.projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Verify digital signature using PI's stored public key
+    const user = await User.findOne({ email: req.user.email });
+    if (!user || !user.publicKey) {
+      return res.status(400).json({ message: "Public key not found. Please generate your key pair first." });
+    }
+
+    const verify = crypto.createVerify("SHA256");
+    verify.update(JSON.stringify(form));
+    verify.end();
+
+    const isValid = verify.verify(
+      {
+        key: user.publicKey,
+        padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+        saltLength: 32,
+      },
+      Buffer.from(req.body.signature, "base64")
+    );
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Signature verification failed. Make sure you are using the correct private key." });
     }
 
     const newHiring = await ManpowerHiring.create({
@@ -42,6 +70,7 @@ export const createManpowerHiring = async (req, res) => {
       customTerms:         (form.customTerms || []).filter(Boolean),
       appFormPath:         req.file?.path || "",
       appFormOriginalName: req.file?.originalname || "",
+      signature:           req.body.signature,
       submittedBy:         req.user.email,
     });
 

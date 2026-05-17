@@ -1,0 +1,13 @@
+# Claude Code — keep private
+.claude/
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+*.log
+
+# Environment files
+.env
+.env.local

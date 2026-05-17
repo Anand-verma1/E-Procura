@@ -117,7 +117,7 @@ export default function SignupPage() {
         type="text"
         placeholder="Full Name"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       />
       {errors.fullName && (
         <p className="text-red-500 text-sm">{errors.fullName}</p>
@@ -128,7 +128,7 @@ export default function SignupPage() {
         type="email"
         placeholder="Email"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       />
       {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
 
@@ -137,7 +137,7 @@ export default function SignupPage() {
         type="text"
         placeholder="Employee ID"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       />
       {errors.employeeId && (
         <p className="text-red-500 text-sm">{errors.employeeId}</p>
@@ -146,7 +146,7 @@ export default function SignupPage() {
       <select
         name="department"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       >
         <option value="">Select Department</option>
         <option>CSE</option>
@@ -163,7 +163,7 @@ export default function SignupPage() {
       <select
         name="role"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       >
         <option value="">Select Role</option>
         <option value="PI">PI (Principal Investigator)</option>
@@ -179,13 +179,13 @@ export default function SignupPage() {
           type={showPassword ? "text" : "password"}
           placeholder="Password"
           onChange={handleChange}
-          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+          className="w-full p-3 rounded-lg bg-white text-black outline-none pr-10"
         />
 
         {/* Eye Button */}
         <span
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
         >
           {showPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
@@ -210,13 +210,13 @@ export default function SignupPage() {
           type={showConfirmPassword ? "text" : "password"}
           placeholder="Confrm Password"
           onChange={handleChange}
-          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+          className="w-full p-3 rounded-lg bg-white text-black outline-none pr-10"
         />
 
         {/* Eye Button */}
         <span
           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
         >
           {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
         </span>

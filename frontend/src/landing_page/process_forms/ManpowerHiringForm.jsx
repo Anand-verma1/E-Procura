@@ -1,4 +1,41 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+
+async function readPem(file) {
+  const text = await file.text();
+  return text
+    .replace("-----BEGIN PRIVATE KEY-----", "")
+    .replace("-----END PRIVATE KEY-----", "")
+    .replace(/\s+/g, "");
+}
+
+async function importPrivateKey(pem) {
+  const binary = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+  return await window.crypto.subtle.importKey(
+    "pkcs8",
+    binary.buffer,
+    { name: "RSA-PSS", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+}
+
+async function signData(privateKey, data) {
+  const enc = new TextEncoder().encode(JSON.stringify(data));
+  const signature = await window.crypto.subtle.sign(
+    { name: "RSA-PSS", saltLength: 32 },
+    privateKey,
+    enc
+  );
+  return btoa(String.fromCharCode(...new Uint8Array(signature)));
+}
+
+function canonicalPayload(obj) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (Array.isArray(obj)) return obj.map(canonicalPayload);
+  const result = {};
+  Object.keys(obj).sort().forEach(k => { result[k] = canonicalPayload(obj[k]); });
+  return result;
+}
 
 const POSITION_TYPES = [
   { value: "postdoc",    label: "Post Doctoral Fellow" },
@@ -42,8 +79,8 @@ const SALARY_MAP = {
   postdoc:    { min: "55,000", max: "55,000", note: "consolidated + ₹2,00,000 research grant/year" },
   associate:  { min: "35,000", max: "50,000", note: "consolidated" },
   jrf:        { min: "28,000", max: "41,000", note: "consolidated" },
-  manager:    { min: "50,000", max: "75,000", note: "consolidated" },
-  engineer:   { min: "35,000", max: "55,000", note: "consolidated" },
+  manager:    { min: "80,000", max: "1,00,000", note: "consolidated" },
+  engineer:   { min: "40,000", max: "75,000", note: "consolidated" },
   internship: { min: "10,000", max: "20,000", note: "consolidated" },
 };
 
@@ -107,6 +144,7 @@ function StepBar({ step }) {
 }
 
 export default function ManpowerHiringForm({ projectId = "", projectCode: initProjCode = "", projectTitle: initProjTitle = "", piName: initPiName = "", piEmail: initPiEmail = "" }) {
+  const formTopRef = useRef(null);
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -136,9 +174,10 @@ export default function ManpowerHiringForm({ projectId = "", projectCode: initPr
   const [desirables, setDesirables] = useState([]);
   const [customDes,  setCustomDes]  = useState("");
 
-  const [committee,   setCommittee]   = useState([""]);
-  const [customTerms, setCustomTerms] = useState([""]);
-  const [appFormFile, setAppFormFile] = useState(null);
+  const [committee,      setCommittee]      = useState([""]);
+  const [customTerms,    setCustomTerms]    = useState([""]);
+  const [appFormFile,    setAppFormFile]    = useState(null);
+  const [privateKeyFile, setPrivateKeyFile] = useState(null);
 
   const setMem = (i, v) => setCommittee((p) => { const c = [...p]; c[i] = v; return c; });
   const delMem = (i) => setCommittee((p) => p.filter((_, j) => j !== i));
@@ -163,27 +202,35 @@ export default function ManpowerHiringForm({ projectId = "", projectCode: initPr
   const posLabel       = POSITION_TYPES.find((p) => p.value === posType)?.label || "—";
 
   const handleSubmit = async () => {
-    if (!agency)   { alert("Please enter the sponsoring agency"); return; }
-    if (!posType)  { alert("Please select a position type"); return; }
-    if (!numPosts) { alert("Please enter number of posts"); return; }
-    if (!duration) { alert("Please enter duration"); return; }
-    if (!deadline) { alert("Please enter submission deadline"); return; }
+    if (!agency)         { alert("Please enter the sponsoring agency"); return; }
+    if (!posType)        { alert("Please select a position type"); return; }
+    if (!numPosts)       { alert("Please enter number of posts"); return; }
+    if (!duration)       { alert("Please enter duration"); return; }
+    if (!deadline)       { alert("Please enter submission deadline"); return; }
+    if (!privateKeyFile) { alert("Upload your private key (.pem) to sign the request"); return; }
 
     try {
       setSubmitting(true);
       const token = localStorage.getItem("token");
 
-      const payload = {
+      const payload = canonicalPayload({
         projectId, projectCode: projCode, projectTitle: projTitle,
         reqDate, agency,
         piName, piDesig, piAddr, piEmail, piWeb,
         posType, posLabel, numPosts, ageLimit,
         salMin, salMax, salNote, duration, deadline, notifDate, emailSub,
         essentials, desirables, committee, customTerms,
-      };
+        role: "PI",
+        timestamp: new Date().toISOString(),
+      });
+
+      const pem = await readPem(privateKeyFile);
+      const privateKey = await importPrivateKey(pem);
+      const signature = await signData(privateKey, payload);
 
       const fd = new FormData();
       fd.append("formData", JSON.stringify(payload));
+      fd.append("signature", signature);
       if (appFormFile) fd.append("appForm", appFormFile);
 
       const res = await fetch("/api/manpower-hiring", {
@@ -200,14 +247,14 @@ export default function ManpowerHiringForm({ projectId = "", projectCode: initPr
       }
     } catch (err) {
       console.error(err);
-      alert("Network error — check if backend is running");
+      alert("Network error or invalid key — check both are correct");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-6" ref={formTopRef}>
 
       {/* Step bar */}
       <StepBar step={step} />
@@ -546,6 +593,32 @@ export default function ManpowerHiringForm({ projectId = "", projectCode: initPr
             )}
           </div>
 
+          {/* Digital Signature */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className={sectionTitle}>Digital Signature</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Upload your private key (.pem) to digitally sign this request. Your key was generated when you registered.
+            </p>
+            <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-6 cursor-pointer transition
+              ${privateKeyFile ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"}`}>
+              <input type="file" accept=".pem" className="hidden"
+                onChange={(e) => setPrivateKeyFile(e.target.files[0] || null)} />
+              {privateKeyFile ? (
+                <>
+                  <span className="text-2xl">🔑</span>
+                  <p className="text-sm font-semibold text-green-700">{privateKeyFile.name}</p>
+                  <p className="text-xs text-gray-400">Key loaded — click to change</p>
+                </>
+              ) : (
+                <>
+                  <span className="text-2xl text-gray-300">🔑</span>
+                  <p className="text-sm font-semibold text-gray-600">Click to upload private key (.pem)</p>
+                  <p className="text-xs text-gray-400">Required to digitally sign this request</p>
+                </>
+              )}
+            </label>
+          </div>
+
           {/* Submit / Success */}
           {submitted ? (
             <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
@@ -583,7 +656,7 @@ export default function ManpowerHiringForm({ projectId = "", projectCode: initPr
           ))}
         </div>
         {step < 3 ? (
-          <button onClick={() => setStep((s) => Math.min(3, s + 1))}
+          <button onClick={() => { setStep((s) => Math.min(3, s + 1)); formTopRef.current?.scrollIntoView({ behavior: "smooth" }); }}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm transition">
             Next →
           </button>

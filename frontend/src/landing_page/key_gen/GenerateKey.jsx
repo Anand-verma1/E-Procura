@@ -39,7 +39,7 @@ export default function GenerateKey() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--primary)] text-white">
-      <div className="bg-[var(--primaryAccent)] p-10 rounded-xl w-[450px] shadow-xl">
+      <div className="bg-[var(--primaryAccent)] p-6 sm:p-10 rounded-xl w-full max-w-[450px] shadow-xl mx-4">
 
         {!success ? (
           <>

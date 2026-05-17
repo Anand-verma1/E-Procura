@@ -86,7 +86,7 @@ export default function LoginPage() {
         name="email"
         placeholder="Email"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       />
       {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
 
@@ -96,13 +96,13 @@ export default function LoginPage() {
           type={showPassword ? "text" : "password"}
           placeholder="Password"
           onChange={handleChange}
-          className="w-full p-2 rounded-lg bg-white text-black outline-none pr-10"
+          className="w-full p-3 rounded-lg bg-white text-black outline-none pr-10"
         />
 
         {/* Eye Button */}
         <span
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-2 cursor-pointer text-gray-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
         >
           {showPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
@@ -114,7 +114,7 @@ export default function LoginPage() {
       <select
         name="role"
         onChange={handleChange}
-        className="w-full p-2 rounded-lg bg-white text-black outline-none"
+        className="w-full p-3 rounded-lg bg-white text-black outline-none"
       >
         <option value="">Select Role</option>
         <option value="PI">PI (Principal Investigator)</option>

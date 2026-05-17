@@ -34,6 +34,7 @@ const manpowerHiringSchema = new mongoose.Schema({
   appFormPath:         String,
   appFormOriginalName: String,
 
+  signature:   String,
   submittedBy: String,
   status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now },
